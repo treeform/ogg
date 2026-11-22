@@ -1,0 +1,3 @@
+nimTitle	transformsavx2	ogg/transformsavx2.html	module ogg/transformsavx2		0
+nim	fftStagesAvx2	ogg/transformsavx2.html#fftStagesAvx2,openArray[Complex64],openArray[Complex64]	proc fftStagesAvx2(work: var openArray[Complex64]; twiddles: openArray[Complex64])		11
+nim	denseDctAvx2	ogg/transformsavx2.html#denseDctAvx2,array[,int16]	proc denseDctAvx2(coefficients: var array[64, int16])		91

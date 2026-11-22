@@ -28,7 +28,7 @@
     <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">Index</h1>
-      Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bitstreams.html">ogg/bitstreams</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>, <a href="ogg/packets.html">ogg/packets</a>, <a href="ogg/profiles.html">ogg/profiles</a>, <a href="ogg/theora.html">ogg/theora</a>, <a href="ogg/theoradct.html">ogg/theoradct</a>, <a href="ogg/theoraframes.html">ogg/theoraframes</a>, <a href="ogg/theorasetup.html">ogg/theorasetup</a>, <a href="ogg/vorbis.html">ogg/vorbis</a>, <a href="ogg/vorbisbooks.html">ogg/vorbisbooks</a>, <a href="ogg/vorbisfloors.html">ogg/vorbisfloors</a>, <a href="ogg/vorbistransforms.html">ogg/vorbistransforms</a>.<br/><p /><h2>API symbols</h2>
+      Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bitstreams.html">ogg/bitstreams</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>, <a href="ogg/packets.html">ogg/packets</a>, <a href="ogg/profiles.html">ogg/profiles</a>, <a href="ogg/simd.html">ogg/simd</a>, <a href="ogg/theora.html">ogg/theora</a>, <a href="ogg/theoradct.html">ogg/theoradct</a>, <a href="ogg/theoraframes.html">ogg/theoraframes</a>, <a href="ogg/theorasetup.html">ogg/theorasetup</a>, <a href="ogg/transformsavx2.html">ogg/transformsavx2</a>, <a href="ogg/vorbis.html">ogg/vorbis</a>, <a href="ogg/vorbisbooks.html">ogg/vorbisbooks</a>, <a href="ogg/vorbisfloors.html">ogg/vorbisfloors</a>, <a href="ogg/vorbistransforms.html">ogg/vorbistransforms</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="advance" href="#advance"><span>advance:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="bitstreams: proc advance(r: var BitReader; count: int)" href="ogg/bitstreams.html#advance%2CBitReader%2Cint">bitstreams: proc advance(r: var BitReader; count: int)</a></li>
@@ -87,9 +87,17 @@
 <li><a class="reference external"
           data-doc-search-tag="decoders: type Decoder" href="ogg/decoders.html#Decoder">decoders: type Decoder</a></li>
           </ul></dd>
+<dt><a name="denseDctAvx2" href="#denseDctAvx2"><span>denseDctAvx2:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="transformsavx2: proc denseDctAvx2(coefficients: var array[64, int16])" href="ogg/transformsavx2.html#denseDctAvx2%2Carray%5B%2Cint16%5D">transformsavx2: proc denseDctAvx2(coefficients: var array[64, int16])</a></li>
+          </ul></dd>
 <dt><a name="EndOfPacket" href="#EndOfPacket"><span>EndOfPacket:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="bitstreams: object EndOfPacket" href="ogg/bitstreams.html#EndOfPacket">bitstreams: object EndOfPacket</a></li>
+          </ul></dd>
+<dt><a name="fftStagesAvx2" href="#fftStagesAvx2"><span>fftStagesAvx2:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="transformsavx2: proc fftStagesAvx2(work: var openArray[Complex64]; twiddles: openArray[Complex64])" href="ogg/transformsavx2.html#fftStagesAvx2%2CopenArray%5BComplex64%5D%2CopenArray%5BComplex64%5D">transformsavx2: proc fftStagesAvx2(work: var openArray[Complex64]; twiddles: openArray[Complex64])</a></li>
           </ul></dd>
 <dt><a name="flag" href="#flag"><span>flag:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -118,6 +126,10 @@
 <dt><a name="hasAudio" href="#hasAudio"><span>hasAudio:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc hasAudio(decoder: Decoder): bool" href="ogg/decoders.html#hasAudio%2CDecoder">decoders: proc hasAudio(decoder: Decoder): bool</a></li>
+          </ul></dd>
+<dt><a name="hasAvx2" href="#hasAvx2"><span>hasAvx2:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="simd: let hasAvx2" href="ogg/simd.html#hasAvx2">simd: let hasAvx2</a></li>
           </ul></dd>
 <dt><a name="hasVideo" href="#hasVideo"><span>hasVideo:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -289,6 +301,10 @@
 <li><a class="reference external"
           data-doc-search-tag="theoraframes: proc unpack(r: var BitReader; s: TheoraSetup; l: Layout): FrameData" href="ogg/theoraframes.html#unpack%2CBitReader%2CTheoraSetup%2CLayout">theoraframes: proc unpack(r: var BitReader; s: TheoraSetup; l: Layout): FrameData</a></li>
           </ul></dd>
+<dt><a name="useX86Simd" href="#useX86Simd"><span>useX86Simd:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="simd: const useX86Simd" href="ogg/simd.html#useX86Simd">simd: const useX86Simd</a></li>
+          </ul></dd>
 <dt><a name="vector" href="#vector"><span>vector:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="vorbisbooks: iterator vector(book: Book; entry: int): float64" href="ogg/vorbisbooks.html#vector.i%2CBook%2Cint">vorbisbooks: iterator vector(book: Book; entry: int): float64</a></li>
@@ -329,7 +345,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 18:18:01 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 18:25:39 UTC</small>
       </div>
     </div>
   </div>
