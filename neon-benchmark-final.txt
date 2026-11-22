@@ -1,0 +1,11 @@
+| Fixture | Baseline (ms) | NEON (ms) | NEON / baseline |
+|---|---:|---:|---:|
+| mono.ogg | 0.1287 | 0.1285 | 1.00x |
+| stereo.ogg | 0.3526 | 0.3469 | 0.98x |
+| silence.ogg | 0.0479 | 0.0495 | 1.03x |
+| continued.ogg | 0.2878 | 0.2914 | 1.01x |
+| video420.ogv | 0.2597 | 0.2635 | 1.01x |
+| video422.ogv | 0.3295 | 0.3300 | 1.00x |
+| video444.ogv | 0.3937 | 0.3964 | 1.01x |
+| mixed.ogv | 1.0263 | 1.0196 | 0.99x |
+| All fixtures | 2.9472 | 2.9278 | 0.99x |

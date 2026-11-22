@@ -4,6 +4,7 @@
 import std/math
 import profiles, simd
 when useX86Simd: import kernelsavx2
+when useNeon: import kernelsneon
 import bitstreams, common, packets, theoradct, theoraframes, theorasetup
 
 type
@@ -127,6 +128,16 @@ proc reconstruct(v: Theora, f: var FrameData, dest: Picture, p: int) {.measure.}
             writeBlockAvx2(dest[p].data, offset, stride, samples, refPic[p].data,
               offset + my * stride + mx, offset + my2 * stride + mx2)
             continue
+      when useNeon:
+        let stride = dest[p].width
+        let offset = bottom * stride + left
+        if source == 1:
+          writeBlockNeon(dest[p].data, offset, stride, samples, [], 0, 0)
+          continue
+        if interior:
+          writeBlockNeon(dest[p].data, offset, stride, samples, refPic[p].data,
+            offset + my * stride + mx, offset + my2 * stride + mx2)
+          continue
       for row in 0 ..< 8:
         let py = bottom - row
         let offset = py * dest[p].width + left

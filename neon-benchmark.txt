@@ -1,0 +1,16 @@
+Apple M1, macOS ARM64, Nim 2.2.10, release builds.
+Eight alternating rounds; median batch means; preloaded fixtures.
+Baseline compiled from unmodified checkout before NEON edits.
+Only Vorbis FFT stages use the new NEON kernel.
+
+| Fixture | Baseline (ms) | NEON (ms) | NEON / baseline |
+|---|---:|---:|---:|
+| mono.ogg | 0.1288 | 0.1312 | 1.02x |
+| stereo.ogg | 0.3529 | 0.3640 | 1.03x |
+| silence.ogg | 0.0478 | 0.0480 | 1.00x |
+| continued.ogg | 0.2881 | 0.2989 | 1.04x |
+| video420.ogv | 0.2598 | 0.2602 | 1.00x |
+| video422.ogv | 0.3296 | 0.3288 | 1.00x |
+| video444.ogv | 0.3941 | 0.3938 | 1.00x |
+| mixed.ogv | 1.0270 | 1.0461 | 1.02x |
+| All fixtures | 2.9484 | 2.9800 | 1.01x |

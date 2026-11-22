@@ -25,3 +25,6 @@ when useX86Simd:
     # GCC and Clang include the OS register-state check in this predicate.
     proc supports(feature: cstring): cint {.importc: "__builtin_cpu_supports", nodecl.}
     let hasAvx2* = supports(cstring"avx2") != 0
+
+const useNeon* = defined(arm64) and not defined(oggNoSimd) and
+  not defined(js) and (defined(gcc) or defined(clang))

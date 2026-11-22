@@ -1,0 +1,16 @@
+Apple M1, Nim 2.2.10, release; eight alternating rounds.
+Baseline is the original unmodified checkout; NEON covers FFT, dense IDCT,
+and intra/single/averaged interior pixel reconstruction.
+Values are median batch means in milliseconds per decode.
+
+| Fixture | Baseline (ms) | NEON (ms) | NEON / baseline |
+|---|---:|---:|---:|
+| mono.ogg | 0.1287 | 0.1274 | 0.99x |
+| stereo.ogg | 0.3530 | 0.3476 | 0.98x |
+| silence.ogg | 0.0478 | 0.0479 | 1.00x |
+| continued.ogg | 0.2884 | 0.2870 | 1.00x |
+| video420.ogv | 0.2598 | 0.2109 | 0.81x |
+| video422.ogv | 0.3300 | 0.2581 | 0.78x |
+| video444.ogv | 0.3936 | 0.3077 | 0.78x |
+| mixed.ogv | 1.0257 | 0.9314 | 0.91x |
+| All fixtures | 2.9468 | 2.6409 | 0.90x |

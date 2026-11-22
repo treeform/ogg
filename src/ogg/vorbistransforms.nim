@@ -1,6 +1,7 @@
 import std/[complex, math]
 import profiles, simd
 when useX86Simd: import kernelsavx2
+when useNeon: import kernelsneon
 
 type MdctPlan* = object
   reverse: seq[int]
@@ -60,6 +61,9 @@ proc fft(work: var openArray[Complex64], twiddles: openArray[Complex64]) =
     if hasAvx2:
       fftStagesAvx2(work, twiddles)
       return
+  when useNeon:
+    fftStagesNeon(work, twiddles)
+    return
   var stride = 4
   while stride < work.len:
     for base in countup(0, work.high, 2 * stride):

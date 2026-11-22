@@ -1,0 +1,40 @@
+Historical FFT investigation below. Subsequent implementation now adds
+NEON dense Theora IDCT and pixel reconstruction, matching AVX2 coverage.
+See neon-benchmark-parity.txt for current results.
+
+NEON investigation on Apple M1, Nim 2.2.10, release builds
+
+AVX2 and current NEON do not have equal coverage. AVX2 accelerates Vorbis
+FFT stages, dense Theora IDCT, and Theora reconstruction. NEON currently
+accelerates only FFT stages. Video-only fixtures cannot benefit from this.
+
+Disassembly of the oggNoSimd MDCT binary shows fmul.2d, fmla.2d, fadd.2d,
+and fsub.2d in the FFT loop: the compiler already uses NEON. oggNoSimd
+turns off explicit kernels; it does not disable compiler vectorization.
+
+Controlled source experiment: replacing deinterleaving vld2/vst2 with
+contiguous loads/stores plus unzip/zip improved isolated MDCT timing.
+Explicit fused operations improved it further. These experiments identify
+a costly instruction choice in the initial implementation, but do not
+measure individual instruction latency or prove a hardware bottleneck.
+
+Isolated MDCT timings, ns/transform; 20,000 transforms/process,
+median of seven processes for final comparison. Input refill is included,
+allocation setup excluded; work buffers reused. tools/bench_mdct.nim.
+
+Size       scalar    revised loads    revised loads + FMA
+256         463.0        450.0                437.7
+1024       2060.8       2014.3               1957.4
+4096       9155.8       8956.5               8667.4
+
+Initial deinterleaving version in earlier nine-process measurements:
+492.9, 2240.8, 10062.7 ns for the same three sizes.
+
+Fused operations can change low-order floating-point bits. Existing dense
+and sparse MDCT tests cover every supported block size against the cosine
+definition, and corpus tests compare decoded samples to reference output.
+
+The original 1.1% whole-corpus slowdown is small; it should not be treated
+as a statistically established regression. Full-corpus measurements are
+medians of eight alternating batches; fixtures are preloaded in memory.
+See neon-benchmark-final.txt for final whole-decoder comparison.

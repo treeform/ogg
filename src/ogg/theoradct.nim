@@ -4,6 +4,7 @@
 
 import simd
 when useX86Simd: import kernelsavx2
+when useNeon: import kernelsneon
 
 type DctBlock* = array[64, int16]
 
@@ -60,6 +61,9 @@ proc inverseDct*(coefficients: var DctBlock, last = 64) =
       if hasAvx2:
         denseDctAvx2(coefficients)
         return
+    when useNeon:
+      denseDctNeon(coefficients)
+      return
     for row in 0 ..< 8: transform(coefficients, temp, row, 8)
     for row in 0 ..< 8: transform(temp, coefficients, row, 8)
   for value in coefficients.mitems: value = int16((int32(value) + 8) shr 4)
