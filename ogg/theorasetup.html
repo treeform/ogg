@@ -72,7 +72,7 @@
   info*: VideoInfo
   width*, height*: int
   filter*: array[64, int]
-  quant*: array[6, array[64, QuantTable]]">TheoraSetup</a></li>
+  quant*: array[64, ref array[6, QuantTable]]">TheoraSetup</a></li>
 
     </ul>
   </details>
@@ -83,6 +83,10 @@
     <ul class="simple simple-toc-section">
       <ul class="simple nested-toc-section">header
   <li><a class="reference" href="#header%2CTheoraSetup%2CPacket" title="header(s: var TheoraSetup; packet: Packet)">header(s: var TheoraSetup; packet: Packet)</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">prepareQuant
+  <li><a class="reference" href="#prepareQuant%2CTheoraSetup%2Cint" title="prepareQuant(s: var TheoraSetup; qi: int)">prepareQuant(s: var TheoraSetup; qi: int)</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">token
@@ -107,7 +111,7 @@
     <div class="section" id="6">
   <h1><a class="toc-backref" href="#6">Imports</a></h1>
   <dl class="item">
-    <a class="reference external" href="bitstreams.html">bitstreams</a>, <a class="reference external" href="common.html">common</a>, <a class="reference external" href="packets.html">packets</a>
+    <a class="reference external" href="bitstreams.html">bitstreams</a>, <a class="reference external" href="common.html">common</a>, <a class="reference external" href="packets.html">packets</a>, <a class="reference external" href="profiles.html">profiles</a>
   </dl>
 </div>
 <div class="section" id="7">
@@ -118,8 +122,8 @@
   <dd>
     
     
-    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L10" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L10" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L11" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L11" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -128,12 +132,12 @@
   <span class="Identifier">info</span><span class="Operator">*</span><span class="Other">:</span> <a href="common.html#VideoInfo"><span class="Identifier">VideoInfo</span></a>
   <span class="Identifier">width</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">height</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
   <span class="Identifier">filter</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">64</span><span class="Other">,</span> <span class="Identifier">int</span><span class="Other">]</span>
-  <span class="Identifier">quant</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">6</span><span class="Other">,</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">64</span><span class="Other">,</span> <a href="#QuantTable"><span class="Identifier">QuantTable</span></a><span class="Other">]</span><span class="Other">]</span></pre></dt>
+  <span class="Identifier">quant</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">64</span><span class="Other">,</span> <span class="Keyword">ref</span> <span class="Identifier">array</span><span class="Other">[</span><span class="DecNumber">6</span><span class="Other">,</span> <a href="#QuantTable"><span class="Identifier">QuantTable</span></a><span class="Other">]</span><span class="Other">]</span></pre></dt>
   <dd>
     
     
-    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L11" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L11" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L14" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L14" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -150,8 +154,22 @@
   <dd>
     
     Reads identification, comments, or setup from one checked Ogg packet.
-    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L78" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L78" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L91" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L91" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+
+</div>
+<div id="prepareQuant-procs-all">
+  <div id="prepareQuant,TheoraSetup,int">
+  <dt><pre><span class="Keyword">proc</span> <a href="#prepareQuant%2CTheoraSetup%2Cint"><span class="Identifier">prepareQuant</span></a><span class="Other">(</span><span class="Identifier">s</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="#TheoraSetup"><span class="Identifier">TheoraSetup</span></a><span class="Other">;</span> <span class="Identifier">qi</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Expands each signaled quality index once, on its first frame.
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L73" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L73" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -164,8 +182,8 @@
   <dd>
     
     Decodes a DCT token from the selected table.
-    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L29" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L29" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/theorasetup.nim#L35" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/theorasetup.nim#L35" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -181,7 +199,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 17:52:26 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 18:13:29 UTC</small>
       </div>
     </div>
   </div>

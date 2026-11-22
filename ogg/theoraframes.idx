@@ -1,7 +1,7 @@
 nimTitle	theoraframes	ogg/theoraframes.html	module ogg/theoraframes		0
-nim	Motion	ogg/theoraframes.html#Motion	tuple Motion		7
-nim	Fragment	ogg/theoraframes.html#Fragment	object Fragment		8
-nim	Layout	ogg/theoraframes.html#Layout	object Layout		13
-nim	FrameData	ogg/theoraframes.html#FrameData	object FrameData		19
-nim	initLayout	ogg/theoraframes.html#initLayout,TheoraSetup	proc initLayout(s: TheoraSetup): Layout		35
-nim	unpack	ogg/theoraframes.html#unpack,BitReader,TheoraSetup,Layout	proc unpack(r: var BitReader; s: TheoraSetup; l: Layout): FrameData		254
+nim	Motion	ogg/theoraframes.html#Motion	tuple Motion		8
+nim	Fragment	ogg/theoraframes.html#Fragment	object Fragment		9
+nim	Layout	ogg/theoraframes.html#Layout	object Layout		14
+nim	FrameData	ogg/theoraframes.html#FrameData	object FrameData		20
+nim	initLayout	ogg/theoraframes.html#initLayout,TheoraSetup	proc initLayout(s: TheoraSetup): Layout		36
+nim	unpack	ogg/theoraframes.html#unpack,BitReader,TheoraSetup,Layout	proc unpack(r: var BitReader; s: TheoraSetup; l: Layout): FrameData		255

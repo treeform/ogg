@@ -1,4 +1,4 @@
 nimTitle	theora	ogg/theora.html	module ogg/theora		0
-nim	Theora	ogg/theora.html#Theora	object Theora		9
-nim	header	ogg/theora.html#header,Theora,Packet	proc header(v: var Theora; packet: Packet)		15
-nim	decode	ogg/theora.html#decode,Theora,Packet	proc decode(v: var Theora; packet: Packet): VideoFrame		164
+nim	Theora	ogg/theora.html#Theora	object Theora		10
+nim	header	ogg/theora.html#header,Theora,Packet	proc header(v: var Theora; packet: Packet)		16
+nim	decode	ogg/theora.html#decode,Theora,Packet	proc decode(v: var Theora; packet: Packet): VideoFrame		176

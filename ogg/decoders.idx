@@ -1,11 +1,11 @@
 nimTitle	decoders	ogg/decoders.html	module ogg/decoders		0
-nim	Decoder	ogg/decoders.html#Decoder	type Decoder		3
-nim	close	ogg/decoders.html#close,Decoder	proc close(decoder: Decoder)		10
-nim	newOgg	ogg/decoders.html#newOgg,string	proc newOgg(data: string): Decoder		50
-nim	openOgg	ogg/decoders.html#openOgg,string	proc openOgg(path: string): Decoder		57
-nim	audioInfo	ogg/decoders.html#audioInfo,Decoder	proc audioInfo(decoder: Decoder): AudioInfo		66
-nim	videoInfo	ogg/decoders.html#videoInfo,Decoder	proc videoInfo(decoder: Decoder): VideoInfo		71
-nim	hasAudio	ogg/decoders.html#hasAudio,Decoder	proc hasAudio(decoder: Decoder): bool		76
-nim	hasVideo	ogg/decoders.html#hasVideo,Decoder	proc hasVideo(decoder: Decoder): bool		80
-nim	rewind	ogg/decoders.html#rewind,Decoder	proc rewind(decoder: Decoder)		84
-nim	readFrame	ogg/decoders.html#readFrame,Decoder,MediaFrame	proc readFrame(decoder: Decoder; frame: var MediaFrame): bool		92
+nim	Decoder	ogg/decoders.html#Decoder	type Decoder		4
+nim	close	ogg/decoders.html#close,Decoder	proc close(decoder: Decoder)		11
+nim	newOgg	ogg/decoders.html#newOgg,string	proc newOgg(data: string): Decoder		51
+nim	openOgg	ogg/decoders.html#openOgg,string	proc openOgg(path: string): Decoder		58
+nim	audioInfo	ogg/decoders.html#audioInfo,Decoder	proc audioInfo(decoder: Decoder): AudioInfo		67
+nim	videoInfo	ogg/decoders.html#videoInfo,Decoder	proc videoInfo(decoder: Decoder): VideoInfo		72
+nim	hasAudio	ogg/decoders.html#hasAudio,Decoder	proc hasAudio(decoder: Decoder): bool		77
+nim	hasVideo	ogg/decoders.html#hasVideo,Decoder	proc hasVideo(decoder: Decoder): bool		81
+nim	rewind	ogg/decoders.html#rewind,Decoder	proc rewind(decoder: Decoder)		85
+nim	readFrame	ogg/decoders.html#readFrame,Decoder,MediaFrame	proc readFrame(decoder: Decoder; frame: var MediaFrame): bool		93

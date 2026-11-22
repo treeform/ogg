@@ -1,5 +1,5 @@
 nimTitle	vorbisbooks	ogg/vorbisbooks.html	module ogg/vorbisbooks		0
-nim	Book	ogg/vorbisbooks.html#Book	object Book		7
-nim	readBook	ogg/vorbisbooks.html#readBook,BitReader,int	proc readBook(r: var BitReader; budget: var int): Book		38
-nim	scalar	ogg/vorbisbooks.html#scalar,BitReader,Book	proc scalar(r: var BitReader; book: Book): int		114
-nim	vector	ogg/vorbisbooks.html#vector.i,Book,int	iterator vector(book: Book; entry: int): float64		122
+nim	Book	ogg/vorbisbooks.html#Book	object Book		8
+nim	readBook	ogg/vorbisbooks.html#readBook,BitReader,int	proc readBook(r: var BitReader; budget: var int): Book		39
+nim	scalar	ogg/vorbisbooks.html#scalar,BitReader,Book	proc scalar(r: var BitReader; book: Book): int		111
+nim	vector	ogg/vorbisbooks.html#vector.i,Book,int	iterator vector(book: Book; entry: int): float64		119
