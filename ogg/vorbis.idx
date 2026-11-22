@@ -1,4 +1,4 @@
 nimTitle	vorbis	ogg/vorbis.html	module ogg/vorbis		0
 nim	Vorbis	ogg/vorbis.html#Vorbis	object Vorbis		21
-nim	header	ogg/vorbis.html#header,Vorbis,Packet	proc header(v: var Vorbis; packet: Packet)		85
-nim	decode	ogg/vorbis.html#decode,Vorbis,Packet	proc decode(v: var Vorbis; packet: Packet): AudioFrame		207
+nim	header	ogg/vorbis.html#header,Vorbis,Packet	proc header(v: var Vorbis; packet: Packet)		88
+nim	decode	ogg/vorbis.html#decode,Vorbis,Packet	proc decode(v: var Vorbis; packet: Packet): AudioFrame		177

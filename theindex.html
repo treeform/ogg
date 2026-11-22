@@ -28,7 +28,7 @@
     <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">Index</h1>
-      Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bitstreams.html">ogg/bitstreams</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>, <a href="ogg/packets.html">ogg/packets</a>, <a href="ogg/theora.html">ogg/theora</a>, <a href="ogg/theoradct.html">ogg/theoradct</a>, <a href="ogg/theoraframes.html">ogg/theoraframes</a>, <a href="ogg/theorasetup.html">ogg/theorasetup</a>, <a href="ogg/vorbis.html">ogg/vorbis</a>, <a href="ogg/vorbisbooks.html">ogg/vorbisbooks</a>, <a href="ogg/vorbisfloors.html">ogg/vorbisfloors</a>.<br/><p /><h2>API symbols</h2>
+      Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bitstreams.html">ogg/bitstreams</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>, <a href="ogg/packets.html">ogg/packets</a>, <a href="ogg/theora.html">ogg/theora</a>, <a href="ogg/theoradct.html">ogg/theoradct</a>, <a href="ogg/theoraframes.html">ogg/theoraframes</a>, <a href="ogg/theorasetup.html">ogg/theorasetup</a>, <a href="ogg/vorbis.html">ogg/vorbis</a>, <a href="ogg/vorbisbooks.html">ogg/vorbisbooks</a>, <a href="ogg/vorbisfloors.html">ogg/vorbisfloors</a>, <a href="ogg/vorbistransforms.html">ogg/vorbistransforms</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="Audio" href="#Audio"><span>Audio:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: FrameKind.Audio" href="ogg/common.html#Audio">common: FrameKind.Audio</a></li>
@@ -135,6 +135,10 @@
 <li><a class="reference external"
           data-doc-search-tag="theoraframes: proc initLayout(s: TheoraSetup): Layout" href="ogg/theoraframes.html#initLayout%2CTheoraSetup">theoraframes: proc initLayout(s: TheoraSetup): Layout</a></li>
           </ul></dd>
+<dt><a name="initWindow" href="#initWindow"><span>initWindow:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbistransforms: proc initWindow(length: int): seq[float64]" href="ogg/vorbistransforms.html#initWindow%2Cint">vorbistransforms: proc initWindow(length: int): seq[float64]</a></li>
+          </ul></dd>
 <dt><a name="invalid" href="#invalid"><span>invalid:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="bitstreams: proc invalid(reason: string)" href="ogg/bitstreams.html#invalid%2Cstring">bitstreams: proc invalid(reason: string)</a></li>
@@ -143,9 +147,19 @@
 <li><a class="reference external"
           data-doc-search-tag="theoradct: proc inverseDct(coefficients: var DctBlock)" href="ogg/theoradct.html#inverseDct%2CDctBlock">theoradct: proc inverseDct(coefficients: var DctBlock)</a></li>
           </ul></dd>
+<dt><a name="inverseMdct" href="#inverseMdct"><span>inverseMdct:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbistransforms: proc inverseMdct(plan: var MdctPlan; work: var seq[Complex64];
+            samples: var seq[float64])" href="ogg/vorbistransforms.html#inverseMdct%2CMdctPlan%2Cseq%5BComplex64%5D%2Cseq%5Bfloat64%5D">vorbistransforms: proc inverseMdct(plan: var MdctPlan; work: var seq[Complex64];
+            samples: var seq[float64])</a></li>
+          </ul></dd>
 <dt><a name="Layout" href="#Layout"><span>Layout:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="theoraframes: object Layout" href="ogg/theoraframes.html#Layout">theoraframes: object Layout</a></li>
+          </ul></dd>
+<dt><a name="MdctPlan" href="#MdctPlan"><span>MdctPlan:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbistransforms: object MdctPlan" href="ogg/vorbistransforms.html#MdctPlan">vorbistransforms: object MdctPlan</a></li>
           </ul></dd>
 <dt><a name="MediaFrame" href="#MediaFrame"><span>MediaFrame:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -287,7 +301,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 17:41:45 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 17:48:32 UTC</small>
       </div>
     </div>
   </div>

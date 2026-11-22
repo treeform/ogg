@@ -1,0 +1,4 @@
+nimTitle	vorbistransforms	ogg/vorbistransforms.html	module ogg/vorbistransforms		0
+nim	MdctPlan	ogg/vorbistransforms.html#MdctPlan	object MdctPlan		3
+nim	inverseMdct	ogg/vorbistransforms.html#inverseMdct,MdctPlan,seq[Complex64],seq[float64]	proc inverseMdct(plan: var MdctPlan; work: var seq[Complex64];\n            samples: var seq[float64])		29
+nim	initWindow	ogg/vorbistransforms.html#initWindow,int	proc initWindow(length: int): seq[float64]		61
