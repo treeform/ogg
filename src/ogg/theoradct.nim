@@ -3,7 +3,7 @@
 ## Redistribution terms are in licenses/theora.txt.
 
 import simd
-when useX86Simd: import transformsavx2
+when useX86Simd: import kernelsavx2
 
 type DctBlock* = array[64, int16]
 

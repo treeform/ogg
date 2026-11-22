@@ -2,7 +2,8 @@
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
 ## Redistribution terms are in licenses/theora.txt.
 import std/math
-import profiles
+import profiles, simd
+when useX86Simd: import kernelsavx2
 import bitstreams, common, packets, theoradct, theoraframes, theorasetup
 
 type
@@ -115,6 +116,17 @@ proc reconstruct(v: Theora, f: var FrameData, dest: Picture, p: int) {.measure.}
         left + max(mx, mx2) + 7 < dest[p].width and
         bottom + min(my, my2) - 7 >= 0 and
         bottom + max(my, my2) < dest[p].height
+      when useX86Simd:
+        if hasAvx2:
+          let stride = dest[p].width
+          let offset = bottom * stride + left
+          if source == 1:
+            writeBlockAvx2(dest[p].data, offset, stride, samples, [], 0, 0)
+            continue
+          if interior:
+            writeBlockAvx2(dest[p].data, offset, stride, samples, refPic[p].data,
+              offset + my * stride + mx, offset + my2 * stride + mx2)
+            continue
       for row in 0 ..< 8:
         let py = bottom - row
         let offset = py * dest[p].width + left

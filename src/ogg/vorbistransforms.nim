@@ -1,6 +1,6 @@
 import std/[complex, math]
 import profiles, simd
-when useX86Simd: import transformsavx2
+when useX86Simd: import kernelsavx2
 
 type MdctPlan* = object
   reverse: seq[int]

@@ -1,4 +1,4 @@
-## AVX2 transform kernels. Only this translation unit targets AVX2.
+## AVX2 codec kernels. Only this translation unit targets AVX2.
 import std/complex
 import nimsimd/avx2
 
@@ -97,3 +97,34 @@ proc denseDctAvx2*(coefficients: var array[64, int16]) =
   transpose(x)
   transformLines(x, true)
   for i in 0 ..< 8: mm_storeu_si128(addr coefficients[8*i], x[i])
+
+type Prediction = enum Intra, Single, Average
+
+# The caller selects only complete 8x8 blocks using the coded plane geometry.
+{.push boundChecks: not defined(release), overflowChecks: not defined(release).}
+proc writeBlockAvx2*(dest: var openArray[uint8], offset, stride: int,
+    residual: array[64, int16], reference: openArray[uint8], a, b: int) =
+  ## Adds residuals and clips two 8-pixel rows at a time, bottom to top.
+  assert stride in 8 .. 4096 and offset >= 7*stride and offset <= dest.len - 8
+  assert reference.len == 0 or (min(a,b) >= 7*stride and
+    max(a,b) <= reference.len - 8)
+  template rows(pos: int): M256i =
+    mm256_cvtepu8_epi16(mm_unpacklo_epi64(
+      mm_loadl_epi64(unsafeAddr reference[pos]),
+      mm_loadl_epi64(unsafeAddr reference[pos - stride])))
+  template paint(mode: static Prediction) =
+    for row in countup(0, 6, 2):
+      let delta = row * stride
+      let pred =
+        when mode == Intra: mm256_set1_epi16(128'i16)
+        elif mode == Single: rows(a - delta)
+        else: mm256_srli_epi16(mm256_add_epi16(rows(a - delta), rows(b - delta)), 1)
+      let sum = mm256_adds_epi16(pred, mm256_loadu_si256(unsafeAddr residual[row*8]))
+      let pixels = mm_packus_epi16(mm256_castsi256_si128(sum),
+        mm256_extracti128_si256(sum, 1))
+      mm_storel_epi64(addr dest[offset - delta], pixels)
+      mm_storel_epi64(addr dest[offset - delta - stride], mm_srli_si128(pixels, 8))
+  if reference.len == 0: paint(Intra)
+  elif a == b: paint(Single)
+  else: paint(Average)
+{.pop.}
