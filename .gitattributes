@@ -1,0 +1,15 @@
+* text=auto
+*.nim text eol=lf
+*.nims text eol=lf
+*.nimble text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.ogg binary
+*.ogv binary
+*.f32 binary
+*.yuv binary
+src/ogg/vendor/** -text -whitespace linguist-vendored=true

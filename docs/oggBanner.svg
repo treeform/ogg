@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+  <rect width="1200" height="300" rx="20" fill="#101d2c"/>
+  <g fill="#264357">
+    <rect x="758" y="54" width="364" height="192" rx="14"/>
+    <rect x="790" y="76" width="300" height="148" rx="6" fill="#172d3d"/>
+  </g>
+  <g fill="#92ddc8">
+    <rect x="771" y="74" width="9" height="18" rx="2"/>
+    <rect x="771" y="108" width="9" height="18" rx="2"/>
+    <rect x="771" y="142" width="9" height="18" rx="2"/>
+    <rect x="771" y="176" width="9" height="18" rx="2"/>
+    <rect x="771" y="210" width="9" height="18" rx="2"/>
+    <rect x="1100" y="74" width="9" height="18" rx="2"/>
+    <rect x="1100" y="108" width="9" height="18" rx="2"/>
+    <rect x="1100" y="142" width="9" height="18" rx="2"/>
+    <rect x="1100" y="176" width="9" height="18" rx="2"/>
+    <rect x="1100" y="210" width="9" height="18" rx="2"/>
+  </g>
+  <path d="M817 150h24l12-26 16 54 20-89 20 122 22-94 17 60 15-27h87"
+    fill="none" stroke="#78d7b6" stroke-width="6" stroke-linejoin="round"/>
+  <text x="70" y="162" fill="#f1f6f9" font-family="sans-serif" font-size="110" font-weight="700">ogg</text>
+  <text x="74" y="218" fill="#a8c6d6" font-family="sans-serif" font-size="27">Audio and video in Nim</text>
+  <text x="74" y="66" fill="#78d7b6" font-family="sans-serif" font-size="16" letter-spacing="4">VORBIS + THEORA</text>
+</svg>
