@@ -77,8 +77,8 @@ commands from the repository root.
 ```sh
 git archive -o tmp/bench/baseline.tar ba3a2e6 src
 tar -xf tmp/bench/baseline.tar -C tmp/bench/baseline
-nim c -d:release --path:tmp/bench/baseline/src --nimcache:tmp/bench/cache-c --out:tmp/bench/bench-c tools/bench_decode.nim
-nim c -d:release --path:src --nimcache:tmp/bench/cache-native --out:tmp/bench/bench-nim tools/bench_decode.nim
+nim c -d:release -d:benchOriginalC '--path:$projectDir/../tmp/bench/baseline/src' --nimcache:tmp/bench/cache-c --out:tmp/bench/bench-c tools/bench_decode.nim
+nim c -d:release '--path:$projectDir/../src' --nimcache:tmp/bench/cache-native --out:tmp/bench/bench-nim tools/bench_decode.nim
 ./tmp/bench/bench-nim ./tmp/bench/bench-c
 ```
 

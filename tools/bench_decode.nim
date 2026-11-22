@@ -2,6 +2,12 @@
 ## with the C-backed binary's path as its only argument.
 import std/[algorithm, json, monotimes, os, osproc, strformat, strutils, times]
 import ogg
+when defined(benchOriginalC):
+  import std/macros
+  static:
+    let decoderDir = bindSym"newOgg".getImpl.lineInfoObj.filename.parentDir
+    doAssert fileExists(decoderDir / "reference.c"),
+      "The C benchmark must resolve newOgg from the archived C-backed decoder."
 when defined(oggFluffy):
   from fluffy/measure import startTrace, endTrace, dumpMeasures
 
