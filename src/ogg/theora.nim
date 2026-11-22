@@ -102,17 +102,34 @@ proc reconstruct(v: Theora, f: var FrameData, dest: Picture, p: int) =
       let my = -(frag.mv.y div dy)
       let mx2 = mx + cmp(frag.mv.x mod dx, 0)
       let my2 = my - cmp(frag.mv.y mod dy, 0)
+      let left = 8*x
+      let interior = left + min(mx, mx2) >= 0 and
+        left + max(mx, mx2) + 7 < dest[p].width and
+        bottom + min(my, my2) - 7 >= 0 and
+        bottom + max(my, my2) < dest[p].height
       for row in 0 ..< 8:
         let py = bottom - row
-        for col in 0 ..< 8:
-          let px = 8*x + col
-          var pred = 128
-          if source != 1:
-            pred = refPic[p].pixel(px + mx, py + my)
-            if mx != mx2 or my != my2:
-              pred = (pred + refPic[p].pixel(px + mx2, py + my2)) div 2
-          dest[p].data[py * dest[p].width + px] =
-            uint8(clamp(pred + int(samples[row*8 + col]), 0, 255))
+        let offset = py * dest[p].width + left
+        template store(col, prediction: int) =
+          dest[p].data[offset + col] =
+            uint8(clamp(prediction + int(samples[row*8 + col]), 0, 255))
+        if source == 1:
+          for col in 0 ..< 8: store(col, 128)
+        elif interior:
+          let a = offset + my * dest[p].width + mx
+          let b = offset + my2 * dest[p].width + mx2
+          if a == b:
+            for col in 0 ..< 8: store(col, int(refPic[p].data[a + col]))
+          else:
+            for col in 0 ..< 8:
+              store(col, (int(refPic[p].data[a+col]) +
+                int(refPic[p].data[b+col])) div 2)
+        else:
+          for col in 0 ..< 8:
+            let px = left + col
+            let a = refPic[p].pixel(px + mx, py + my)
+            let b = refPic[p].pixel(px + mx2, py + my2)
+            store(col, (a + b) div 2)
 
 proc edge(plane: var Plane, offset, across, along, limit: int) =
   ## Applies the four-tap loop filter at one eight-pixel block boundary.

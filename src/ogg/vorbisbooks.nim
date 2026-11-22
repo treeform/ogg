@@ -115,7 +115,7 @@ proc scalar*(r: var BitReader, book: Book): int =
   ## Walks a codeword and returns the original entry number.
   var node = 0
   while true:
-    node = int(book.nodes[node][r.read(1)])
+    node = int(book.nodes[node][r.readBit(false)])
     if node < 0: return -1 - node
     if node == 0: invalid("Invalid Vorbis codeword.")
 

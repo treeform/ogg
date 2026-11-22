@@ -8,8 +8,11 @@ proc narrow*(v: int): int16 {.inline.} =
   ## Retains the low signed 16 bits at the codec's specified wrap points.
   cast[int16](uint16(v and 65535))
 
-proc transform(input: DctBlock, output: var DctBlock, row: int) =
+{.push boundChecks: not defined(release), overflowChecks: not defined(release).}
+proc transform(input: DctBlock, output: var DctBlock, row: range[0..7]) =
   ## Transforms one row into a column with the normative fixed-point rotations.
+  # Each table index stays inside the fixed 8x8 block. Rotation products
+  # use signed 16-bit inputs and cosine constants smaller than 65536.
   const Cosine = [0, 64277, 60547, 54491, 46341, 36410, 25080, 12785]
   template x(i: int): int = int(input[row * 8 + i])
   template mul(k, v: int): int = (Cosine[k] * (v)) shr 16
@@ -30,6 +33,7 @@ proc transform(input: DctBlock, output: var DctBlock, row: int) =
   let values = [a+h, b+g, c+f, d+e, d-e, c-f, b-g, a-h]
   for i, value in values:
     output[i * 8 + row] = narrow(value)
+{.pop.}
 
 proc inverseDct*(coefficients: var DctBlock) =
   ## Applies the two-dimensional transform and its final scale adjustment.

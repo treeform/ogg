@@ -41,9 +41,19 @@ proc read*(r: var BitReader, count: int): int =
       invalid("Codec field exceeds the supported range.")
   int(value)
 
-proc flag*(r: var BitReader): bool =
+proc readBit*(r: var BitReader, msb: bool): int {.inline.} =
+  ## Reads one bit in the requested order and advances the byte cursor.
+  if r.pos >= r.data.len:
+    raise newException(EndOfPacket, "Truncated codec packet.")
+  let shift = if msb: 7 - r.bit else: r.bit
+  result = (ord(r.data[r.pos]) shr shift) and 1
+  r.bit += 1
+  r.pos += r.bit shr 3
+  r.bit = r.bit and 7
+
+proc flag*(r: var BitReader): bool {.inline.} =
   ## Reads a single flag.
-  r.read(1) != 0
+  r.readBit(r.msb) != 0
 
 proc ilog*(value: int): int =
   ## Counts the bits required to represent a nonnegative integer.

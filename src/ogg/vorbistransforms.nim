@@ -26,27 +26,40 @@ proc initPlan(length: int): MdctPlan =
       phase *= increment
     half *= 2
 
+proc rotate(a, b: Complex64): Complex64 {.inline, raises: [].} =
+  ## Multiplies a sample by a precomputed unit rotation.
+  Complex64(re: a.re*b.re - a.im*b.im, im: a.re*b.im + a.im*b.re)
+
+{.push boundChecks: not defined(release), overflowChecks: not defined(release).}
+proc fft(work: var openArray[Complex64], twiddles: openArray[Complex64]) =
+  ## Applies radix-two butterflies to the bit-reversed input.
+  # The plan and work buffer have the same power-of-two length, at most
+  # 2048. Each stage partitions work into complete groups of 2*stride.
+  var stride = 1
+  while stride < work.len:
+    for base in countup(0, work.high, 2 * stride):
+      for j in 0 ..< stride:
+        let a = work[base + j]
+        let b = rotate(work[base + j + stride], twiddles[stride + j])
+        work[base + j] = Complex64(re: a.re + b.re, im: a.im + b.im)
+        work[base + j + stride] = Complex64(re: a.re - b.re, im: a.im - b.im)
+    stride *= 2
+{.pop.}
+
 proc inverseMdct*(plan: var MdctPlan, work: var seq[Complex64],
     samples: var seq[float64]) =
   ## Replaces N/2 spectral coefficients with N time-domain samples.
   let half = samples.len
+  doAssert half in 32 .. 4096 and (half and (half - 1)) == 0
   let length = half div 2
   if plan.rotation.len != length: plan = initPlan(length)
   work.setLen(length)
   # Even coefficients and reversed odd coefficients form the real and
   # imaginary parts of a single N/4-point transform.
   for i in 0 ..< length:
-    let pair = complex64(samples[2*i], -samples[half - 1 - 2*i])
-    work[plan.reverse[i]] = pair * plan.rotation[i]
-  var stride = 1
-  while stride < length:
-    for base in countup(0, length - 1, 2 * stride):
-      for j in 0 ..< stride:
-        let a = work[base + j]
-        let b = work[base + j + stride] * plan.twiddles[stride + j]
-        work[base + j] = a + b
-        work[base + j + stride] = a - b
-    stride *= 2
+    let pair = Complex64(re: samples[2*i], im: -samples[half - 1 - 2*i])
+    work[plan.reverse[i]] = rotate(pair, plan.rotation[i])
+  fft(work, plan.twiddles)
   samples.setLen(2 * half)
   # Unfold the DCT-IV using its mirrored, sign-reversed continuation.
   template unfold(k: int, value: float64) =
@@ -54,7 +67,7 @@ proc inverseMdct*(plan: var MdctPlan, work: var seq[Complex64],
     if k < length: samples[3*length + k] = -value
     else: samples[k - length] = value
   for i in 0 ..< length:
-    let pair = work[i] * plan.rotation[i]
+    let pair = rotate(work[i], plan.rotation[i])
     unfold(2*i, pair.re)
     unfold(half - 1 - 2*i, pair.im)
 

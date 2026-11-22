@@ -5,8 +5,8 @@ import bitstreams, common, packets
 
 type
   HuffTree = object
-    root: int
-    branches: seq[array[2, int]]
+    root, count: int
+    branches: array[31, array[2, int8]]
   QuantTable* = array[64, uint16]
   TheoraSetup* = object
     info*: VideoInfo
@@ -18,20 +18,20 @@ type
 proc readTree(r: var BitReader, tree: var HuffTree, depth: int): int =
   ## Reads a preorder Huffman tree, storing terminals as negative indices.
   if r.flag(): return -1 - r.read(5)
-  if tree.branches.len >= 31 or depth >= 32:
+  if tree.count >= tree.branches.len or depth >= 32:
     invalid("Oversized Theora Huffman tree.")
-  result = tree.branches.len
-  tree.branches.add([0, 0])
+  result = tree.count
+  inc tree.count
   for i in 0 .. 1:
     let child = r.readTree(tree, depth + 1)
-    tree.branches[result][i] = child
+    tree.branches[result][i] = int8(child)
 
 proc token*(r: var BitReader, s: TheoraSetup, index: int): int =
   ## Decodes a DCT token from the selected table.
   let tree = addr s.trees[index]
   var node = tree.root
   while node >= 0:
-    node = tree.branches[node][r.read(1)]
+    node = int(tree.branches[node][r.readBit(true)])
   -1 - node
 
 proc quantization(r: var BitReader, s: var TheoraSetup) =
