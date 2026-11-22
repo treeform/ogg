@@ -270,3 +270,4 @@ suite "Malformed and unsupported inputs":
       discard decoder.readFrame(frame)
 
 import test_packets
+import test_vorbis
