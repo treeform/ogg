@@ -1,4 +1,4 @@
 nimTitle	packets	ogg/packets.html	module ogg/packets		0
 nim	Packet	ogg/packets.html#Packet	object Packet		5
 nim	PacketReader	ogg/packets.html#PacketReader	object PacketReader		17
-nim	nextPacket	ogg/packets.html#nextPacket,PacketReader,Packet	proc nextPacket(r: var PacketReader; packet: var Packet): bool		105
+nim	nextPacket	ogg/packets.html#nextPacket,PacketReader,Packet	proc nextPacket(r: var PacketReader; packet: var Packet): bool		123

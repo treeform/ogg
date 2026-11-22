@@ -1,4 +1,4 @@
 nimTitle	theoradct	ogg/theoradct.html	module ogg/theoradct		0
 nim	DctBlock	ogg/theoradct.html#DctBlock	type DctBlock		5
 nim	narrow	ogg/theoradct.html#narrow,int	proc narrow(v: int): int16		7
-nim	inverseDct	ogg/theoradct.html#inverseDct,DctBlock	proc inverseDct(coefficients: var DctBlock)		38
+nim	inverseDct	ogg/theoradct.html#inverseDct,DctBlock,int	proc inverseDct(coefficients: var DctBlock; last = 64)		40

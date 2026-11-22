@@ -1,14 +1,14 @@
 nimTitle	bitstreams	ogg/bitstreams.html	module ogg/bitstreams		0
-nim	EndOfPacket	ogg/bitstreams.html#EndOfPacket	object EndOfPacket		4
-nim	BitReader	ogg/bitstreams.html#BitReader	object BitReader		6
-nim	invalid	ogg/bitstreams.html#invalid,string	proc invalid(reason: string)		12
-nim	hasWindow	ogg/bitstreams.html#hasWindow,BitReader	proc hasWindow(r: BitReader): bool		16
-nim	peekByte	ogg/bitstreams.html#peekByte,BitReader,staticbool	proc peekByte(r: BitReader; msb: static bool): int		20
-nim	advance	ogg/bitstreams.html#advance,BitReader,int	proc advance(r: var BitReader; count: int)		27
-nim	readUnsigned	ogg/bitstreams.html#readUnsigned,BitReader,int	proc readUnsigned(r: var BitReader; count: int): uint32		33
-nim	read	ogg/bitstreams.html#read,BitReader,int	proc read(r: var BitReader; count: int): int		53
-nim	smallField	ogg/bitstreams.html#smallField,BitReader,staticint,staticbool	proc smallField(r: var BitReader; count: static int; msb: static bool): int		61
-nim	readBit	ogg/bitstreams.html#readBit,BitReader,bool	proc readBit(r: var BitReader; msb: bool): int		73
-nim	flag	ogg/bitstreams.html#flag,BitReader	proc flag(r: var BitReader): bool		83
-nim	ilog	ogg/bitstreams.html#ilog,int	proc ilog(value: int): int		87
-nim	comments	ogg/bitstreams.html#comments,string,bool	proc comments(data: string; framing: bool)		94
+nim	EndOfPacket	ogg/bitstreams.html#EndOfPacket	object EndOfPacket		5
+nim	BitReader	ogg/bitstreams.html#BitReader	object BitReader		7
+nim	invalid	ogg/bitstreams.html#invalid,string	proc invalid(reason: string)		13
+nim	hasWindow	ogg/bitstreams.html#hasWindow,BitReader	proc hasWindow(r: BitReader): bool		17
+nim	peekByte	ogg/bitstreams.html#peekByte,BitReader,staticbool	proc peekByte(r: BitReader; msb: static bool): int		21
+nim	advance	ogg/bitstreams.html#advance,BitReader,int	proc advance(r: var BitReader; count: int)		28
+nim	readUnsigned	ogg/bitstreams.html#readUnsigned,BitReader,int	proc readUnsigned(r: var BitReader; count: int): uint32		34
+nim	read	ogg/bitstreams.html#read,BitReader,int	proc read(r: var BitReader; count: int): int		67
+nim	smallField	ogg/bitstreams.html#smallField,BitReader,staticint,staticbool	proc smallField(r: var BitReader; count: static int; msb: static bool): int		75
+nim	readBit	ogg/bitstreams.html#readBit,BitReader,bool	proc readBit(r: var BitReader; msb: bool): int		87
+nim	flag	ogg/bitstreams.html#flag,BitReader	proc flag(r: var BitReader): bool		97
+nim	ilog	ogg/bitstreams.html#ilog,int	proc ilog(value: int): int		101
+nim	comments	ogg/bitstreams.html#comments,string,bool	proc comments(data: string; framing: bool)		108
