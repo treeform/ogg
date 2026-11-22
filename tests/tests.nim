@@ -271,3 +271,4 @@ suite "Malformed and unsupported inputs":
 
 import test_packets
 import test_vorbis
+import test_theora
