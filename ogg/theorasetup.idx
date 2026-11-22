@@ -1,0 +1,5 @@
+nimTitle	theorasetup	ogg/theorasetup.html	module ogg/theorasetup		0
+nim	QuantTable	ogg/theorasetup.html#QuantTable	type QuantTable		10
+nim	TheoraSetup	ogg/theorasetup.html#TheoraSetup	object TheoraSetup		11
+nim	token	ogg/theorasetup.html#token,BitReader,TheoraSetup,int	proc token(r: var BitReader; s: TheoraSetup; index: int): int		29
+nim	header	ogg/theorasetup.html#header,TheoraSetup,Packet	proc header(s: var TheoraSetup; packet: Packet)		78

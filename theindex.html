@@ -28,7 +28,7 @@
     <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">Index</h1>
-      Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bindings.html">ogg/bindings</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>.<br/><p /><h2>API symbols</h2>
+      Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bitstreams.html">ogg/bitstreams</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>, <a href="ogg/packets.html">ogg/packets</a>, <a href="ogg/theora.html">ogg/theora</a>, <a href="ogg/theoradct.html">ogg/theoradct</a>, <a href="ogg/theoraframes.html">ogg/theoraframes</a>, <a href="ogg/theorasetup.html">ogg/theorasetup</a>, <a href="ogg/vorbis.html">ogg/vorbis</a>, <a href="ogg/vorbisbooks.html">ogg/vorbisbooks</a>, <a href="ogg/vorbisfloors.html">ogg/vorbisfloors</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="Audio" href="#Audio"><span>Audio:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: FrameKind.Audio" href="ogg/common.html#Audio">common: FrameKind.Audio</a></li>
@@ -45,13 +45,63 @@
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc audioInfo(decoder: Decoder): AudioInfo" href="ogg/decoders.html#audioInfo%2CDecoder">decoders: proc audioInfo(decoder: Decoder): AudioInfo</a></li>
           </ul></dd>
+<dt><a name="BitReader" href="#BitReader"><span>BitReader:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: object BitReader" href="ogg/bitstreams.html#BitReader">bitstreams: object BitReader</a></li>
+          </ul></dd>
+<dt><a name="Book" href="#Book"><span>Book:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbisbooks: object Book" href="ogg/vorbisbooks.html#Book">vorbisbooks: object Book</a></li>
+          </ul></dd>
+<dt><a name="bookIndex" href="#bookIndex"><span>bookIndex:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbisfloors: proc bookIndex(r: var BitReader; books: seq[Book]; optional = false): int" href="ogg/vorbisfloors.html#bookIndex%2CBitReader%2Cseq%5BBook%5D">vorbisfloors: proc bookIndex(r: var BitReader; books: seq[Book]; optional = false): int</a></li>
+          </ul></dd>
 <dt><a name="close" href="#close"><span>close:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc close(decoder: Decoder)" href="ogg/decoders.html#close%2CDecoder">decoders: proc close(decoder: Decoder)</a></li>
           </ul></dd>
+<dt><a name="comments" href="#comments"><span>comments:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc comments(data: string; framing: bool)" href="ogg/bitstreams.html#comments%2Cstring%2Cbool">bitstreams: proc comments(data: string; framing: bool)</a></li>
+          </ul></dd>
+<dt><a name="DctBlock" href="#DctBlock"><span>DctBlock:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoradct: type DctBlock" href="ogg/theoradct.html#DctBlock">theoradct: type DctBlock</a></li>
+          </ul></dd>
+<dt><a name="decode" href="#decode"><span>decode:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theora: proc decode(v: var Theora; packet: Packet): VideoFrame" href="ogg/theora.html#decode%2CTheora%2CPacket">theora: proc decode(v: var Theora; packet: Packet): VideoFrame</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="vorbis: proc decode(v: var Vorbis; packet: Packet): AudioFrame" href="ogg/vorbis.html#decode%2CVorbis%2CPacket">vorbis: proc decode(v: var Vorbis; packet: Packet): AudioFrame</a></li>
+          </ul></dd>
+<dt><a name="decodeFloor" href="#decodeFloor"><span>decodeFloor:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbisfloors: proc decodeFloor(r: var BitReader; f: Floor; books: seq[Book]; n: int): seq[float64]" href="ogg/vorbisfloors.html#decodeFloor%2CBitReader%2CFloor%2Cseq%5BBook%5D%2Cint">vorbisfloors: proc decodeFloor(r: var BitReader; f: Floor; books: seq[Book]; n: int): seq[float64]</a></li>
+          </ul></dd>
 <dt><a name="Decoder" href="#Decoder"><span>Decoder:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="decoders: type Decoder" href="ogg/decoders.html#Decoder">decoders: type Decoder</a></li>
+          </ul></dd>
+<dt><a name="EndOfPacket" href="#EndOfPacket"><span>EndOfPacket:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: object EndOfPacket" href="ogg/bitstreams.html#EndOfPacket">bitstreams: object EndOfPacket</a></li>
+          </ul></dd>
+<dt><a name="flag" href="#flag"><span>flag:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc flag(r: var BitReader): bool" href="ogg/bitstreams.html#flag%2CBitReader">bitstreams: proc flag(r: var BitReader): bool</a></li>
+          </ul></dd>
+<dt><a name="Floor" href="#Floor"><span>Floor:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbisfloors: object Floor" href="ogg/vorbisfloors.html#Floor">vorbisfloors: object Floor</a></li>
+          </ul></dd>
+<dt><a name="Fragment" href="#Fragment"><span>Fragment:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoraframes: object Fragment" href="ogg/theoraframes.html#Fragment">theoraframes: object Fragment</a></li>
+          </ul></dd>
+<dt><a name="FrameData" href="#FrameData"><span>FrameData:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoraframes: object FrameData" href="ogg/theoraframes.html#FrameData">theoraframes: object FrameData</a></li>
           </ul></dd>
 <dt><a name="FrameKind" href="#FrameKind"><span>FrameKind:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -69,13 +119,53 @@
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc hasVideo(decoder: Decoder): bool" href="ogg/decoders.html#hasVideo%2CDecoder">decoders: proc hasVideo(decoder: Decoder): bool</a></li>
           </ul></dd>
+<dt><a name="header" href="#header"><span>header:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theora: proc header(v: var Theora; packet: Packet)" href="ogg/theora.html#header%2CTheora%2CPacket">theora: proc header(v: var Theora; packet: Packet)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="theorasetup: proc header(s: var TheoraSetup; packet: Packet)" href="ogg/theorasetup.html#header%2CTheoraSetup%2CPacket">theorasetup: proc header(s: var TheoraSetup; packet: Packet)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="vorbis: proc header(v: var Vorbis; packet: Packet)" href="ogg/vorbis.html#header%2CVorbis%2CPacket">vorbis: proc header(v: var Vorbis; packet: Packet)</a></li>
+          </ul></dd>
+<dt><a name="ilog" href="#ilog"><span>ilog:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc ilog(value: int): int" href="ogg/bitstreams.html#ilog%2Cint">bitstreams: proc ilog(value: int): int</a></li>
+          </ul></dd>
+<dt><a name="initLayout" href="#initLayout"><span>initLayout:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoraframes: proc initLayout(s: TheoraSetup): Layout" href="ogg/theoraframes.html#initLayout%2CTheoraSetup">theoraframes: proc initLayout(s: TheoraSetup): Layout</a></li>
+          </ul></dd>
+<dt><a name="invalid" href="#invalid"><span>invalid:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc invalid(reason: string)" href="ogg/bitstreams.html#invalid%2Cstring">bitstreams: proc invalid(reason: string)</a></li>
+          </ul></dd>
+<dt><a name="inverseDct" href="#inverseDct"><span>inverseDct:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoradct: proc inverseDct(coefficients: var DctBlock)" href="ogg/theoradct.html#inverseDct%2CDctBlock">theoradct: proc inverseDct(coefficients: var DctBlock)</a></li>
+          </ul></dd>
+<dt><a name="Layout" href="#Layout"><span>Layout:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoraframes: object Layout" href="ogg/theoraframes.html#Layout">theoraframes: object Layout</a></li>
+          </ul></dd>
 <dt><a name="MediaFrame" href="#MediaFrame"><span>MediaFrame:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: object MediaFrame" href="ogg/common.html#MediaFrame">common: object MediaFrame</a></li>
           </ul></dd>
+<dt><a name="Motion" href="#Motion"><span>Motion:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoraframes: tuple Motion" href="ogg/theoraframes.html#Motion">theoraframes: tuple Motion</a></li>
+          </ul></dd>
+<dt><a name="narrow" href="#narrow"><span>narrow:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoradct: proc narrow(v: int): int16" href="ogg/theoradct.html#narrow%2Cint">theoradct: proc narrow(v: int): int16</a></li>
+          </ul></dd>
 <dt><a name="newOgg" href="#newOgg"><span>newOgg:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc newOgg(data: string): Decoder" href="ogg/decoders.html#newOgg%2Cstring">decoders: proc newOgg(data: string): Decoder</a></li>
+          </ul></dd>
+<dt><a name="nextPacket" href="#nextPacket"><span>nextPacket:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="packets: proc nextPacket(r: var PacketReader; packet: var Packet): bool" href="ogg/packets.html#nextPacket%2CPacketReader%2CPacket">packets: proc nextPacket(r: var PacketReader; packet: var Packet): bool</a></li>
           </ul></dd>
 <dt><a name="OggError" href="#OggError"><span>OggError:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -84,6 +174,14 @@
 <dt><a name="openOgg" href="#openOgg"><span>openOgg:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc openOgg(path: string): Decoder" href="ogg/decoders.html#openOgg%2Cstring">decoders: proc openOgg(path: string): Decoder</a></li>
+          </ul></dd>
+<dt><a name="Packet" href="#Packet"><span>Packet:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="packets: object Packet" href="ogg/packets.html#Packet">packets: object Packet</a></li>
+          </ul></dd>
+<dt><a name="PacketReader" href="#PacketReader"><span>PacketReader:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="packets: object PacketReader" href="ogg/packets.html#PacketReader">packets: object PacketReader</a></li>
           </ul></dd>
 <dt><a name="pcm16" href="#pcm16"><span>pcm16:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -97,41 +195,29 @@
 <li><a class="reference external"
           data-doc-search-tag="common: object Plane" href="ogg/common.html#Plane">common: object Plane</a></li>
           </ul></dd>
+<dt><a name="QuantTable" href="#QuantTable"><span>QuantTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theorasetup: type QuantTable" href="ogg/theorasetup.html#QuantTable">theorasetup: type QuantTable</a></li>
+          </ul></dd>
+<dt><a name="read" href="#read"><span>read:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc read(r: var BitReader; count: int): int" href="ogg/bitstreams.html#read%2CBitReader%2Cint">bitstreams: proc read(r: var BitReader; count: int): int</a></li>
+          </ul></dd>
+<dt><a name="readBook" href="#readBook"><span>readBook:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbisbooks: proc readBook(r: var BitReader; budget: var int): Book" href="ogg/vorbisbooks.html#readBook%2CBitReader%2Cint">vorbisbooks: proc readBook(r: var BitReader; budget: var int): Book</a></li>
+          </ul></dd>
+<dt><a name="readFloor" href="#readFloor"><span>readFloor:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbisfloors: proc readFloor(r: var BitReader; books: seq[Book]): Floor" href="ogg/vorbisfloors.html#readFloor%2CBitReader%2Cseq%5BBook%5D">vorbisfloors: proc readFloor(r: var BitReader; books: seq[Book]): Floor</a></li>
+          </ul></dd>
 <dt><a name="readFrame" href="#readFrame"><span>readFrame:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc readFrame(decoder: Decoder; frame: var MediaFrame): bool" href="ogg/decoders.html#readFrame%2CDecoder%2CMediaFrame">decoders: proc readFrame(decoder: Decoder; frame: var MediaFrame): bool</a></li>
           </ul></dd>
-<dt><a name="Reference" href="#Reference"><span>Reference:</span></a></dt><dd><ul class="simple">
+<dt><a name="readUnsigned" href="#readUnsigned"><span>readUnsigned:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="bindings: object Reference" href="ogg/bindings.html#Reference">bindings: object Reference</a></li>
-          </ul></dd>
-<dt><a name="referenceClose" href="#referenceClose"><span>referenceClose:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="bindings: proc referenceClose(decoder: ptr Reference)" href="ogg/bindings.html#referenceClose%2Cptr.Reference">bindings: proc referenceClose(decoder: ptr Reference)</a></li>
-          </ul></dd>
-<dt><a name="referenceError" href="#referenceError"><span>referenceError:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="bindings: proc referenceError(decoder: ptr Reference): cstring" href="ogg/bindings.html#referenceError%2Cptr.Reference">bindings: proc referenceError(decoder: ptr Reference): cstring</a></li>
-          </ul></dd>
-<dt><a name="ReferenceFrame" href="#ReferenceFrame"><span>ReferenceFrame:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="bindings: object ReferenceFrame" href="ogg/bindings.html#ReferenceFrame">bindings: object ReferenceFrame</a></li>
-          </ul></dd>
-<dt><a name="ReferenceInfo" href="#ReferenceInfo"><span>ReferenceInfo:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="bindings: object ReferenceInfo" href="ogg/bindings.html#ReferenceInfo">bindings: object ReferenceInfo</a></li>
-          </ul></dd>
-<dt><a name="referenceInfo" href="#referenceInfo"><span>referenceInfo:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="bindings: proc referenceInfo(decoder: ptr Reference): ReferenceInfo" href="ogg/bindings.html#referenceInfo%2Cptr.Reference">bindings: proc referenceInfo(decoder: ptr Reference): ReferenceInfo</a></li>
-          </ul></dd>
-<dt><a name="referenceOpen" href="#referenceOpen"><span>referenceOpen:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="bindings: proc referenceOpen(data: pointer; length: csize_t): ptr Reference" href="ogg/bindings.html#referenceOpen%2Cpointer%2Ccsize_t">bindings: proc referenceOpen(data: pointer; length: csize_t): ptr Reference</a></li>
-          </ul></dd>
-<dt><a name="referenceRead" href="#referenceRead"><span>referenceRead:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="bindings: proc referenceRead(decoder: ptr Reference; frame: ptr ReferenceFrame): cint" href="ogg/bindings.html#referenceRead%2Cptr.Reference%2Cptr.ReferenceFrame">bindings: proc referenceRead(decoder: ptr Reference; frame: ptr ReferenceFrame): cint</a></li>
+          data-doc-search-tag="bitstreams: proc readUnsigned(r: var BitReader; count: int): uint32" href="ogg/bitstreams.html#readUnsigned%2CBitReader%2Cint">bitstreams: proc readUnsigned(r: var BitReader; count: int): uint32</a></li>
           </ul></dd>
 <dt><a name="rewind" href="#rewind"><span>rewind:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -140,6 +226,30 @@
 <dt><a name="rgba" href="#rgba"><span>rgba:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: proc rgba(frame: VideoFrame): seq[uint8]" href="ogg/common.html#rgba%2CVideoFrame">common: proc rgba(frame: VideoFrame): seq[uint8]</a></li>
+          </ul></dd>
+<dt><a name="scalar" href="#scalar"><span>scalar:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbisbooks: proc scalar(r: var BitReader; book: Book): int" href="ogg/vorbisbooks.html#scalar%2CBitReader%2CBook">vorbisbooks: proc scalar(r: var BitReader; book: Book): int</a></li>
+          </ul></dd>
+<dt><a name="Theora" href="#Theora"><span>Theora:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theora: object Theora" href="ogg/theora.html#Theora">theora: object Theora</a></li>
+          </ul></dd>
+<dt><a name="TheoraSetup" href="#TheoraSetup"><span>TheoraSetup:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theorasetup: object TheoraSetup" href="ogg/theorasetup.html#TheoraSetup">theorasetup: object TheoraSetup</a></li>
+          </ul></dd>
+<dt><a name="token" href="#token"><span>token:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theorasetup: proc token(r: var BitReader; s: TheoraSetup; index: int): int" href="ogg/theorasetup.html#token%2CBitReader%2CTheoraSetup%2Cint">theorasetup: proc token(r: var BitReader; s: TheoraSetup; index: int): int</a></li>
+          </ul></dd>
+<dt><a name="unpack" href="#unpack"><span>unpack:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="theoraframes: proc unpack(r: var BitReader; s: TheoraSetup; l: Layout): FrameData" href="ogg/theoraframes.html#unpack%2CBitReader%2CTheoraSetup%2CLayout">theoraframes: proc unpack(r: var BitReader; s: TheoraSetup; l: Layout): FrameData</a></li>
+          </ul></dd>
+<dt><a name="vector" href="#vector"><span>vector:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbisbooks: iterator vector(book: Book; entry: int): float64" href="ogg/vorbisbooks.html#vector.i%2CBook%2Cint">vorbisbooks: iterator vector(book: Book; entry: int): float64</a></li>
           </ul></dd>
 <dt><a name="Video" href="#Video"><span>Video:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -157,6 +267,10 @@
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc videoInfo(decoder: Decoder): VideoInfo" href="ogg/decoders.html#videoInfo%2CDecoder">decoders: proc videoInfo(decoder: Decoder): VideoInfo</a></li>
           </ul></dd>
+<dt><a name="Vorbis" href="#Vorbis"><span>Vorbis:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="vorbis: object Vorbis" href="ogg/vorbis.html#Vorbis">vorbis: object Vorbis</a></li>
+          </ul></dd>
 <dt><a name="Yuv420" href="#Yuv420"><span>Yuv420:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: PixelFormat.Yuv420" href="ogg/common.html#Yuv420">common: PixelFormat.Yuv420</a></li>
@@ -173,7 +287,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 16:59:25 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 17:08:16 UTC</small>
       </div>
     </div>
   </div>

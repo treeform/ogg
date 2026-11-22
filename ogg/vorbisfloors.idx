@@ -1,0 +1,5 @@
+nimTitle	vorbisfloors	ogg/vorbisfloors.html	module ogg/vorbisfloors		0
+nim	Floor	ogg/vorbisfloors.html#Floor	object Floor		9
+nim	bookIndex	ogg/vorbisfloors.html#bookIndex,BitReader,seq[Book]	proc bookIndex(r: var BitReader; books: seq[Book]; optional = false): int		16
+nim	readFloor	ogg/vorbisfloors.html#readFloor,BitReader,seq[Book]	proc readFloor(r: var BitReader; books: seq[Book]): Floor		22
+nim	decodeFloor	ogg/vorbisfloors.html#decodeFloor,BitReader,Floor,seq[Book],int	proc decodeFloor(r: var BitReader; f: Floor; books: seq[Book]; n: int): seq[float64]		131
