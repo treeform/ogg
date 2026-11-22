@@ -1,6 +1,7 @@
 ## Compare native packet boundaries and metadata directly with libogg.
 import std/[os, unittest]
-import ogg/[bindings, packets]
+import reference/bindings
+import ogg/[packets]
 
 type
   CStream {.importc: "ogg_stream_state", header: "<ogg/ogg.h>".} = object

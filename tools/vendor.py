@@ -8,7 +8,7 @@ import tarfile
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-VENDOR = ROOT / "src" / "ogg" / "vendor"
+VENDOR = ROOT / "tests" / "reference" / "vendor"
 PACKAGES = [
     ("ogg", "1.3.6", "83e6704730683d004d20e21b8f7f55dcb3383cdf84c0daedf30bde175f774638"),
     ("vorbis", "1.3.7", "0e982409a9c3fc82ee06e08205b1355e5c6aa4c36bca58146ef399621b0ce5ab"),

@@ -1,3 +1,5 @@
+## Derived from libvorbis, copyright (c) 2002-2020 Xiph.org Foundation.
+## Redistribution terms are in licenses/vorbis.txt.
 ## Vorbis I packed codebooks and vector lookup.
 import std/math
 import bitstreams
@@ -5,15 +7,15 @@ import bitstreams
 type Book* = object
   dimension*, entries*, lookup*: int
   nodes: seq[array[2, int32]]
-  minimum, delta: float64
+  minimum, delta: float32
   steps: seq[uint16]
   cumulative: bool
 
-proc unpackFloat(r: var BitReader): float64 =
+proc unpackFloat(r: var BitReader): float32 =
   ## Decodes the Vorbis signed mantissa and biased binary exponent.
   let value = r.readUnsigned(32)
-  result = float64(value and 0x1fffff) *
-    pow(2.0, float64(int((value shr 21) and 1023) - 788))
+  let exponent = clamp(int((value shr 21) and 1023) - 788, -63, 63)
+  result = float32(float64(value and 0x1fffff) * pow(2.0, float64(exponent)))
   if (value shr 31) != 0:
     result = -result
 
@@ -120,12 +122,12 @@ proc scalar*(r: var BitReader, book: Book): int =
 iterator vector*(book: Book, entry: int): float64 =
   ## Expands one selected vector without allocating a dense lookup table.
   var index = entry
-  var last = 0.0
+  var last = 0.0'f32
   for i in 0 ..< book.dimension:
     let step = if book.lookup == 1: index mod book.steps.len
                else: entry * book.dimension + i
-    let value = book.minimum + book.delta * float64(book.steps[step]) + last
+    let value = float32(float64(book.minimum) +
+      float64(book.delta) * float64(book.steps[step]) + float64(last))
     if book.cumulative: last = value
     if book.lookup == 1: index = index div book.steps.len
-    yield value
-
+    yield float64(value)

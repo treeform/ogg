@@ -1,6 +1,6 @@
 ## Theora headers and quantization tables.
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
-## Redistribution terms are in vendor/theora/COPYING.
+## Redistribution terms are in licenses/theora.txt.
 import bitstreams, common, packets
 
 type
@@ -112,4 +112,3 @@ proc header*(s: var TheoraSetup, packet: Packet) =
   else:
     r.quantization(s)
     for tree in s.trees.mitems: tree.root = r.readTree(tree, 0)
-

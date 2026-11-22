@@ -12,4 +12,4 @@
 *.ogv binary
 *.f32 binary
 *.yuv binary
-src/ogg/vendor/** -text -whitespace linguist-vendored=true
+tests/reference/vendor/** -text -whitespace linguist-vendored=true

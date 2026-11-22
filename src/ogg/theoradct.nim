@@ -1,6 +1,6 @@
 ## Theora fixed-point inverse DCT.
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
-## Redistribution terms are in vendor/theora/COPYING.
+## Redistribution terms are in licenses/theora.txt.
 
 type DctBlock* = array[64, int16]
 
@@ -37,4 +37,3 @@ proc inverseDct*(coefficients: var DctBlock) =
   for row in 0 ..< 8: transform(coefficients, temp, row)
   for row in 0 ..< 8: transform(temp, coefficients, row)
   for value in coefficients.mitems: value = int16((int(value) + 8) shr 4)
-

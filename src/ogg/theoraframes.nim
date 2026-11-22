@@ -1,6 +1,6 @@
 ## Theora coded-block order, prediction modes and DCT token unpacking.
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
-## Redistribution terms are in vendor/theora/COPYING.
+## Redistribution terms are in licenses/theora.txt.
 import bitstreams, common, theoradct, theorasetup
 
 type

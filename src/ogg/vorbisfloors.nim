@@ -1,3 +1,5 @@
+## Derived from libvorbis, copyright (c) 2002-2020 Xiph.org Foundation.
+## Redistribution terms are in licenses/vorbis.txt.
 import std/[algorithm, math]
 import bitstreams, vorbisbooks
 
@@ -87,25 +89,32 @@ proc floorZero(r: var BitReader, f: Floor, books: seq[Book], n: int): seq[float6
   if amp == 0: return
   let choice = r.read(ilog(f.books.len))
   if choice >= f.books.len: invalid("Invalid floor 0 book.")
-  let book = books[f.books[choice]]
-  var lsp: seq[float64]
-  var last = 0.0
+  template book: untyped = books[f.books[choice]]
+  var lsp: seq[float32]
+  var last = 0.0'f32
   while lsp.len < f.order:
     let entry = r.scalar(book)
     for value in book.vector(entry):
-      lsp.add(value + last)
+      lsp.add(float32(value) + last)
       if lsp.len == f.order: break
     last = lsp[^1]
-  for a in lsp.mitems: a = 2 * cos(a)
-  amp *= float64(f.ampOffset) / (pow(2.0, float64(f.ampBits)) - 1)
+  for a in lsp.mitems: a = float32(2 * cos(float64(a)))
+  let amplitude = float32(amp) / float32(pow(2.0, float64(f.ampBits)) - 1) *
+    float32(f.ampOffset)
   let nyquist = 0.5 * float64(f.rate)
-  let scale = float64(f.barkMap) / bark(nyquist)
+  let scale = float32(float64(f.barkMap) / bark(nyquist))
+  let spacing = float32(PI / float64(f.barkMap))
+  var previous = -1
   result.setLen(n)
   for i in 0 ..< n:
-    let bin = floor(bark(nyquist * float64(i) / float64(n)) * scale)
-    let w = 2 * cos(PI * bin / float64(f.barkMap))
-    var p = 0.5
-    var q = 0.5
+    let bin = min(f.barkMap - 1, int(bark(nyquist * float64(i) / float64(n)) * scale))
+    if bin == previous:
+      result[i] = result[i - 1]
+      continue
+    previous = bin
+    let w = float32(2 * cos(float64(spacing * float32(bin))))
+    var p = 0.5'f32
+    var q = 0.5'f32
     for j in countup(1, f.order - 1, 2):
       q *= w - lsp[j - 1]
       p *= w - lsp[j]
@@ -116,7 +125,8 @@ proc floorZero(r: var BitReader, f: Floor, books: seq[Book], n: int): seq[float6
     else:
       p *= p * (2 - w)
       q *= q * (2 + w)
-    result[i] = exp((amp / sqrt(p + q) - float64(f.ampOffset)) * ln(10.0) / 20)
+    let db = float64(amplitude) / sqrt(float64(p + q)) - float64(f.ampOffset)
+    result[i] = float32(exp(db * float64(0.11512925'f32)))
 
 proc predict(x0, y0, x1, y1, x: int): int =
   ## Interpolates a floor post with truncation towards zero.
@@ -177,4 +187,3 @@ proc decodeFloor*(r: var BitReader, f: Floor, books: seq[Book], n: int): seq[flo
       prev = point
   for x in f.x[prev] ..< n:
     result[x] = Amplitude[y[prev] * f.multiplier]
-

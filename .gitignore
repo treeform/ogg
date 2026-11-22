@@ -19,9 +19,9 @@ nimcache
 *.out
 
 # Project specific ignores.
-!src/ogg/vendor/**/COPYING
-!src/ogg/vendor/**/AUTHORS
-!src/ogg/vendor/**/README
+!tests/reference/vendor/**/COPYING
+!tests/reference/vendor/**/AUTHORS
+!tests/reference/vendor/**/README
 __pycache__/
 *.pyc
 /tmp/

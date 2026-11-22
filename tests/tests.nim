@@ -1,6 +1,6 @@
 import
   std/[json, math, os, unittest],
-  ogg
+  ogg, ogg/packets
 
 const
   DataPath = currentSourcePath().parentDir / "data"
@@ -269,6 +269,63 @@ suite "Malformed and unsupported inputs":
     expect OggError:
       discard decoder.readFrame(frame)
 
-import test_packets
-import test_reference
-import test_theora
+proc page(flags, number: int, lacing: openArray[int], payload: string): string =
+  ## Constructs a single-stream test page and sets its CRC.
+  result = "OggS" & newString(23)
+  result[5] = char(flags)
+  result[18] = char(number)
+  result[26] = char(lacing.len)
+  for length in lacing: result.add(char(length))
+  result.add(payload)
+  result.checksum(0)
+
+suite "Packet boundaries":
+  test "a zero lace terminates a 255-byte packet and can encode an empty packet":
+    let payload = newString(255)
+    var r = PacketReader(data: page(2, 0, [255], payload) &
+      page(5, 1, [0, 0], ""))
+    var packet: Packet
+    require r.nextPacket(packet)
+    check packet.data == payload
+    check packet.number == 0
+    check packet.granule == -1
+    check not packet.eos
+    require r.nextPacket(packet)
+    check packet.data.len == 0
+    check packet.number == 1
+    check packet.granule == 0
+    check packet.eos
+    check not r.nextPacket(packet)
+
+  test "missing continuation and incomplete final packets raise OggError":
+    let payload = newString(255)
+    for data in [page(2, 0, [255], payload) & page(4, 1, [0], ""),
+        page(6, 0, [255], payload), page(7, 0, [1], "x")]:
+      var r = PacketReader(data: data)
+      var packet: Packet
+      expect OggError:
+        discard r.nextPacket(packet)
+
+  test "empty Theora packets repeat the previous picture with a new timestamp":
+    var data = readFile(DataPath / "video420.ogv")
+    var start = 0
+    while start + data.pageSize(start) < data.len:
+      start += data.pageSize(start)
+    let laces = ord(data[start + 26])
+    require laces < 255
+    data.insert("\0", start + 27 + laces)
+    data[start + 26] = char(laces + 1)
+    data.checksum(start)
+    let decoder = newOgg(data)
+    var frame, previous: MediaFrame
+    var count = 0
+    while decoder.readFrame(frame):
+      if count == 6:
+        check frame.video.planes == previous.video.planes
+        check frame.video.time == 0.5
+      previous = frame
+      inc count
+    check count == 7
+
+{.warning[UnusedImport]: off.}
+import test_packets, test_reference, test_theora

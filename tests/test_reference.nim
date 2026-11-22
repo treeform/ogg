@@ -1,6 +1,6 @@
 ## Compares the public Nim decoder to the pinned C reference packet by packet.
 import std/[os, unittest]
-import ogg, ogg/bindings
+import ogg, reference/bindings
 
 proc compareReference*(path: string) =
   ## Compares every frame, including padded video planes and exact EOF.

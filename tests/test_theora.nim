@@ -1,5 +1,6 @@
 import std/[os, unittest]
-import ogg/[bindings, common, packets, theoradct, theorasetup]
+import reference/bindings
+import ogg/[common, packets, theoradct, theorasetup]
 
 proc referenceDct(output, input: var DctBlock, last: cint)
     {.importc: "oc_idct8x8_c".}

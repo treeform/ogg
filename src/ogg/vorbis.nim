@@ -1,10 +1,12 @@
+## Derived from libvorbis, copyright (c) 2002-2020 Xiph.org Foundation.
+## Redistribution terms are in licenses/vorbis.txt.
 ## Native Vorbis I packet synthesis.
 import std/[complex, math]
 import bitstreams, common, packets, vorbisbooks, vorbisfloors
 
 type
   Residue = object
-    kind, first, limit, grouping, phrase: int
+    kind, first, limit, grouping, phrase, passes: int
     stages: seq[array[8, int]]
 
   Mapping = object
@@ -36,11 +38,18 @@ proc readResidue(r: var BitReader, books: seq[Book]): Residue =
   result.grouping = r.read(24) + 1
   let count = r.read(6) + 1
   result.phrase = r.bookIndex(books)
+  var classifications = 1
+  let phrase = addr books[result.phrase]
+  for i in 0 ..< phrase.dimension:
+    if classifications > phrase.entries div count:
+      invalid("Vorbis residue classifications exceed the phrasebook.")
+    classifications *= count
   var masks = newSeq[int](count)
   for mask in masks.mitems:
     mask = r.read(3)
     if r.flag(): mask = mask or (r.read(5) shl 3)
   for mask in masks:
+    result.passes = max(result.passes, ilog(mask))
     var stages: array[8, int]
     for i in 0 ..< 8:
       stages[i] = -1
@@ -123,7 +132,7 @@ proc residue(r: var BitReader, s: Residue, books: seq[Book], channels: seq[int],
     dim = books[s.phrase].dimension
   if parts <= 0: return
   var classes = newSeq[int](lanes * parts)
-  for stage in 0 ..< 8:
+  for stage in 0 ..< s.passes:
     var part = 0
     while part < parts:
       if stage == 0:
@@ -138,7 +147,7 @@ proc residue(r: var BitReader, s: Residue, books: seq[Book], channels: seq[int],
         for lane in 0 ..< lanes:
           let index = s.stages[classes[lane * parts + part]][stage]
           if index < 0: continue
-          let book = books[index]
+          template book: untyped = books[index]
           let start = s.first + part * s.grouping
           if s.kind == 0:
             let step = s.grouping div book.dimension
@@ -204,7 +213,7 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
   let mode = v.modes[modeIndex]
   let n = v.sizes[int(mode.long)]
   if mode.long: discard r.read(2)
-  let mapping = v.mappings[mode.mapping]
+  template mapping: untyped = v.mappings[mode.mapping]
   let channels = v.info.channels
   var
     gains, pcm: seq[seq[float64]]
@@ -285,4 +294,3 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
       result.samples[(i - first) * channels + ch] = float32(sample)
   v.samples += limit - first
   v.previous = move(pcm)
-

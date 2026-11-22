@@ -29,25 +29,27 @@ claimed by this milestone.
 
 ## 2. Native Ogg container
 
-- [ ] Implement page headers, CRC, lacing, packet assembly, and stream serials.
-- [ ] Add differential tests against libogg, including boundary and invalid cases.
-- [ ] Define resource limits, incremental input, chaining, and granule semantics.
-- [ ] Feed native-demuxed packets into the existing reference codec decoders.
+- [x] Implement page headers, CRC, lacing, packet assembly, and stream serials.
+- [x] Compare packet payloads, granules, BOS and EOS against libogg.
+- [x] Test exact lacing boundaries, truncated packets, and discontinuities.
+- [x] Feed native packets into the Nim codecs through the public decoder.
 
 ## 3. Native Vorbis audio
 
-- [ ] Port header parsing, bit reading, codebooks, floors, and residues.
-- [ ] Port channel coupling, inverse MDCT, windowing, and overlap-add.
-- [ ] Preserve exact granule trimming and document multichannel order.
+- [x] Port header parsing, bit reading, codebooks, floors, and residues.
+- [x] Port channel coupling, inverse MDCT, windowing, and overlap-add.
+- [x] Preserve granule trimming and Vorbis channel order.
 - [ ] Expand the corpus for floor 0, transients, variable blocks, and 5.1 audio.
-- [ ] Compare PCM, performance, and memory use against the C reference.
+- [x] Compare PCM against libvorbis and independent FFmpeg output.
+- [ ] Benchmark performance and memory use against the C reference.
 
 ## 4. Native Theora video
 
-- [ ] Port headers, Huffman tables, frame reconstruction, and inverse transforms.
-- [ ] Port motion compensation, loop filtering, and reference frame management.
-- [ ] Cover duplicate frames, keyframes, cropping offsets, and granule positions.
-- [ ] Compare all decoded planes against the C reference and independent decoder.
+- [x] Port headers, Huffman tables, frame reconstruction, and inverse transforms.
+- [x] Port motion compensation, loop filtering, and reference frame management.
+- [x] Cover duplicate frames and keyframes.
+- [ ] Expand coverage of cropping offsets and granule positions.
+- [x] Compare full planes against libtheora and visible planes against FFmpeg.
 
 ## Later
 

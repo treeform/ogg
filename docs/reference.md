@@ -21,13 +21,27 @@ this project still deliberately rejects chaining and unsupported logical streams
 | Theora reconstruction | libtheora 1.2.0 | `huffdec.c`, `dequant.c`, `idct.c`, `fragment.c` |
 
 The complete upstream release URLs and SHA-256 values are in
-[`sources.json`](../src/ogg/vendor/sources.json). Checksums come from
+[`sources.json`](../tests/reference/vendor/sources.json). Checksums come from
 [Xiph's download page](https://xiph.org/downloads/). `python tools/vendor.py`
 downloads and verifies those releases before extracting the selected sources.
 
-## Build and ABI
+## Native decoder
 
-`src/ogg/bindings.nim` compiles the portable C source files directly. Architecture
+`import ogg` builds the container reader and both codecs from Nim source.
+`src/ogg/packets.nim` validates each page and assembles packets across pages.
+`vorbis.nim` synthesizes interleaved PCM in Vorbis channel order. `theora.nim`
+reconstructs the full coded YCbCr planes and retains the reference pictures
+needed for later frames. Both decoders return owned data.
+
+Input occupies one in-memory string. The reader tracks up to two logical
+streams and validates checksums before emitting packets. Vorbis setup limits
+the combined count of codebook entries and packed lookup values to 8,388,608.
+The existing limits of eight audio channels, 384000 Hz and 4096 by 4096 coded
+pixels apply at the identification headers.
+
+## Reference build and ABI
+
+`tests/reference/bindings.nim` compiles the portable C source files directly. Architecture
 specific assembly, external codec DLLs, and external build systems are not used.
 Libvorbis's shared synthesis sources also refer to some analysis routines, so the
 linked dependency set contains those routines even though no encoder is exposed.
@@ -48,9 +62,10 @@ buffer is borrowed from a Nim-owned string. It validates page sequencing, dispat
 logical streams, consumes the three codec headers, and emits one decoded packet's
 output at a time. It does not buffer decoded audio or video for the other stream.
 
-`decoders.nim` copies the borrowed PCM or YCbCr output into Nim sequences before
-the next C call. A destructor and an idempotent `close` release native resources.
-All public decode and IO failures use `OggError`.
+`tests/test_reference.nim` compares this borrowed output with each frame from
+the public decoder. It checks frame order, timestamps, sample counts, absolute
+PCM error below 0.00001, every byte of all three padded planes, and EOF.
+Run `nim r tests/test_reference.nim path/to/clip.ogv` to compare another file.
 
 ## Timing and pixels
 
@@ -65,18 +80,8 @@ offsets. Postprocessing is disabled for reproducible plane comparisons. `rgba`
 is a convenience conversion with a fixed limited-range BT.601 matrix and nearest
 chroma sampling, not a color-managed renderer.
 
-Theora duplicates are returned as frames when the decoder reports them. The first
-corpus does not yet exercise duplicate-only packets or nonzero crop offsets.
-
-## Native port strategy
-
-Keep this backend and its fixtures intact as an oracle. First separate the native
-Ogg packet reader from codec decoding, then replace Vorbis and Theora independently.
-The public owned frame types need not expose either backend's ABI.
-
-Compare integer page and packet results exactly. Compare floating audio with
-documented tolerances and integer video planes before any RGB conversion. Expand
-the corpus before claiming coverage of a new feature.
+Duplicate Theora packets repeat the previous picture and advance its timestamp.
+The tests exercise duplicates by appending an empty packet to a corpus file.
 
 ## Specifications
 
@@ -86,6 +91,7 @@ the corpus before claiming coverage of a new feature.
 
 ## Licenses
 
-The Nim facade and C integration code use this repository's MIT license. Each
-vendored library retains its upstream COPYING file and copyright notices. The
-generated corpus has its own CC0 dedication in `tests/data/LICENSE`.
+The Nim facade and C integration code use this repository's MIT license.
+The Vorbis and Theora ports retain the Xiph notices and redistribution terms in
+`src/ogg/licenses`. Each vendored library retains its upstream COPYING file.
+The generated corpus has its own CC0 dedication in `tests/data/LICENSE`.

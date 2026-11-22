@@ -1,6 +1,6 @@
 ## Sequential Theora frame reconstruction.
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
-## Redistribution terms are in vendor/theora/COPYING.
+## Redistribution terms are in licenses/theora.txt.
 import std/math
 import bitstreams, common, packets, theoradct, theoraframes, theorasetup
 
