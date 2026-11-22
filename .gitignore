@@ -24,3 +24,4 @@ nimcache
 !src/ogg/vendor/**/README
 __pycache__/
 *.pyc
+/tmp/

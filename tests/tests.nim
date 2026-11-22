@@ -268,3 +268,5 @@ suite "Malformed and unsupported inputs":
         discard
     expect OggError:
       discard decoder.readFrame(frame)
+
+import test_packets
