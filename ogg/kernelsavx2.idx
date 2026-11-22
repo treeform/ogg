@@ -1,0 +1,4 @@
+nimTitle	kernelsavx2	ogg/kernelsavx2.html	module ogg/kernelsavx2		0
+nim	fftStagesAvx2	ogg/kernelsavx2.html#fftStagesAvx2,openArray[Complex64],openArray[Complex64]	proc fftStagesAvx2(work: var openArray[Complex64]; twiddles: openArray[Complex64])		11
+nim	denseDctAvx2	ogg/kernelsavx2.html#denseDctAvx2,array[,int16]	proc denseDctAvx2(coefficients: var array[64, int16])		91
+nim	writeBlockAvx2	ogg/kernelsavx2.html#writeBlockAvx2,openArray[uint8],int,int,array[,int16],openArray[uint8],int,int	proc writeBlockAvx2(dest: var openArray[uint8]; offset, stride: int;\n               residual: array[64, int16]; reference: openArray[uint8];\n               a, b: int)		105

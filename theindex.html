@@ -28,7 +28,7 @@
     <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">Index</h1>
-      Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bitstreams.html">ogg/bitstreams</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>, <a href="ogg/packets.html">ogg/packets</a>, <a href="ogg/profiles.html">ogg/profiles</a>, <a href="ogg/simd.html">ogg/simd</a>, <a href="ogg/theora.html">ogg/theora</a>, <a href="ogg/theoradct.html">ogg/theoradct</a>, <a href="ogg/theoraframes.html">ogg/theoraframes</a>, <a href="ogg/theorasetup.html">ogg/theorasetup</a>, <a href="ogg/transformsavx2.html">ogg/transformsavx2</a>, <a href="ogg/vorbis.html">ogg/vorbis</a>, <a href="ogg/vorbisbooks.html">ogg/vorbisbooks</a>, <a href="ogg/vorbisfloors.html">ogg/vorbisfloors</a>, <a href="ogg/vorbistransforms.html">ogg/vorbistransforms</a>.<br/><p /><h2>API symbols</h2>
+      Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bitstreams.html">ogg/bitstreams</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>, <a href="ogg/kernelsavx2.html">ogg/kernelsavx2</a>, <a href="ogg/packets.html">ogg/packets</a>, <a href="ogg/profiles.html">ogg/profiles</a>, <a href="ogg/simd.html">ogg/simd</a>, <a href="ogg/theora.html">ogg/theora</a>, <a href="ogg/theoradct.html">ogg/theoradct</a>, <a href="ogg/theoraframes.html">ogg/theoraframes</a>, <a href="ogg/theorasetup.html">ogg/theorasetup</a>, <a href="ogg/vorbis.html">ogg/vorbis</a>, <a href="ogg/vorbisbooks.html">ogg/vorbisbooks</a>, <a href="ogg/vorbisfloors.html">ogg/vorbisfloors</a>, <a href="ogg/vorbistransforms.html">ogg/vorbistransforms</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="advance" href="#advance"><span>advance:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="bitstreams: proc advance(r: var BitReader; count: int)" href="ogg/bitstreams.html#advance%2CBitReader%2Cint">bitstreams: proc advance(r: var BitReader; count: int)</a></li>
@@ -89,7 +89,7 @@
           </ul></dd>
 <dt><a name="denseDctAvx2" href="#denseDctAvx2"><span>denseDctAvx2:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="transformsavx2: proc denseDctAvx2(coefficients: var array[64, int16])" href="ogg/transformsavx2.html#denseDctAvx2%2Carray%5B%2Cint16%5D">transformsavx2: proc denseDctAvx2(coefficients: var array[64, int16])</a></li>
+          data-doc-search-tag="kernelsavx2: proc denseDctAvx2(coefficients: var array[64, int16])" href="ogg/kernelsavx2.html#denseDctAvx2%2Carray%5B%2Cint16%5D">kernelsavx2: proc denseDctAvx2(coefficients: var array[64, int16])</a></li>
           </ul></dd>
 <dt><a name="EndOfPacket" href="#EndOfPacket"><span>EndOfPacket:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -97,7 +97,7 @@
           </ul></dd>
 <dt><a name="fftStagesAvx2" href="#fftStagesAvx2"><span>fftStagesAvx2:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="transformsavx2: proc fftStagesAvx2(work: var openArray[Complex64]; twiddles: openArray[Complex64])" href="ogg/transformsavx2.html#fftStagesAvx2%2CopenArray%5BComplex64%5D%2CopenArray%5BComplex64%5D">transformsavx2: proc fftStagesAvx2(work: var openArray[Complex64]; twiddles: openArray[Complex64])</a></li>
+          data-doc-search-tag="kernelsavx2: proc fftStagesAvx2(work: var openArray[Complex64]; twiddles: openArray[Complex64])" href="ogg/kernelsavx2.html#fftStagesAvx2%2CopenArray%5BComplex64%5D%2CopenArray%5BComplex64%5D">kernelsavx2: proc fftStagesAvx2(work: var openArray[Complex64]; twiddles: openArray[Complex64])</a></li>
           </ul></dd>
 <dt><a name="flag" href="#flag"><span>flag:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -329,6 +329,14 @@
 <li><a class="reference external"
           data-doc-search-tag="vorbis: object Vorbis" href="ogg/vorbis.html#Vorbis">vorbis: object Vorbis</a></li>
           </ul></dd>
+<dt><a name="writeBlockAvx2" href="#writeBlockAvx2"><span>writeBlockAvx2:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="kernelsavx2: proc writeBlockAvx2(dest: var openArray[uint8]; offset, stride: int;
+               residual: array[64, int16]; reference: openArray[uint8];
+               a, b: int)" href="ogg/kernelsavx2.html#writeBlockAvx2%2CopenArray%5Buint8%5D%2Cint%2Cint%2Carray%5B%2Cint16%5D%2CopenArray%5Buint8%5D%2Cint%2Cint">kernelsavx2: proc writeBlockAvx2(dest: var openArray[uint8]; offset, stride: int;
+               residual: array[64, int16]; reference: openArray[uint8];
+               a, b: int)</a></li>
+          </ul></dd>
 <dt><a name="Yuv420" href="#Yuv420"><span>Yuv420:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: PixelFormat.Yuv420" href="ogg/common.html#Yuv420">common: PixelFormat.Yuv420</a></li>
@@ -345,7 +353,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 18:25:39 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 18:27:46 UTC</small>
       </div>
     </div>
   </div>
