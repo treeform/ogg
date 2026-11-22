@@ -4,6 +4,7 @@ nim	BitReader	ogg/bitstreams.html#BitReader	object BitReader		6
 nim	invalid	ogg/bitstreams.html#invalid,string	proc invalid(reason: string)		12
 nim	readUnsigned	ogg/bitstreams.html#readUnsigned,BitReader,int	proc readUnsigned(r: var BitReader; count: int): uint32		16
 nim	read	ogg/bitstreams.html#read,BitReader,int	proc read(r: var BitReader; count: int): int		36
-nim	flag	ogg/bitstreams.html#flag,BitReader	proc flag(r: var BitReader): bool		44
-nim	ilog	ogg/bitstreams.html#ilog,int	proc ilog(value: int): int		48
-nim	comments	ogg/bitstreams.html#comments,string,bool	proc comments(data: string; framing: bool)		55
+nim	readBit	ogg/bitstreams.html#readBit,BitReader,bool	proc readBit(r: var BitReader; msb: bool): int		44
+nim	flag	ogg/bitstreams.html#flag,BitReader	proc flag(r: var BitReader): bool		54
+nim	ilog	ogg/bitstreams.html#ilog,int	proc ilog(value: int): int		58
+nim	comments	ogg/bitstreams.html#comments,string,bool	proc comments(data: string; framing: bool)		65

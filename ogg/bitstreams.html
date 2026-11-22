@@ -100,6 +100,10 @@
   <li><a class="reference" href="#read%2CBitReader%2Cint" title="read(r: var BitReader; count: int): int">read(r: var BitReader; count: int): int</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">readBit
+  <li><a class="reference" href="#readBit%2CBitReader%2Cbool" title="readBit(r: var BitReader; msb: bool): int">readBit(r: var BitReader; msb: bool): int</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">readUnsigned
   <li><a class="reference" href="#readUnsigned%2CBitReader%2Cint" title="readUnsigned(r: var BitReader; count: int): uint32">readUnsigned(r: var BitReader; count: int): uint32</a></li>
 
@@ -164,8 +168,8 @@
   <dd>
     
     Validates the length-prefixed vendor string and comment list.
-    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/bitstreams.nim#L55" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/bitstreams.nim#L55" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/bitstreams.nim#L65" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/bitstreams.nim#L65" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -173,12 +177,13 @@
 </div>
 <div id="flag-procs-all">
   <div id="flag,BitReader">
-  <dt><pre><span class="Keyword">proc</span> <a href="#flag%2CBitReader"><span class="Identifier">flag</span></a><span class="Other">(</span><span class="Identifier">r</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="#BitReader"><span class="Identifier">BitReader</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">EndOfPacket</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#flag%2CBitReader"><span class="Identifier">flag</span></a><span class="Other">(</span><span class="Identifier">r</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="#BitReader"><span class="Identifier">BitReader</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span class="Identifier">inline</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">EndOfPacket</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+                                    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     Reads a single flag.
-    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/bitstreams.nim#L44" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/bitstreams.nim#L44" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/bitstreams.nim#L54" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/bitstreams.nim#L54" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -190,8 +195,8 @@
   <dd>
     
     Counts the bits required to represent a nonnegative integer.
-    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/bitstreams.nim#L48" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/bitstreams.nim#L48" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/bitstreams.nim#L58" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/bitstreams.nim#L58" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -225,6 +230,20 @@
 </div>
 
 </div>
+<div id="readBit-procs-all">
+  <div id="readBit,BitReader,bool">
+  <dt><pre><span class="Keyword">proc</span> <a href="#readBit%2CBitReader%2Cbool"><span class="Identifier">readBit</span></a><span class="Other">(</span><span class="Identifier">r</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="#BitReader"><span class="Identifier">BitReader</span></a><span class="Other">;</span> <span class="Identifier">msb</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> {.<span class="Identifier">inline</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">EndOfPacket</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Reads one bit in the requested order and advances the byte cursor.
+    <a href="https://github.com/treeform/ogg/tree/master/src/ogg/bitstreams.nim#L44" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/treeform/ogg/edit/devel/src/ogg/bitstreams.nim#L44" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+
+</div>
 <div id="readUnsigned-procs-all">
   <div id="readUnsigned,BitReader,int">
   <dt><pre><span class="Keyword">proc</span> <a href="#readUnsigned%2CBitReader%2Cint"><span class="Identifier">readUnsigned</span></a><span class="Other">(</span><span class="Identifier">r</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="#BitReader"><span class="Identifier">BitReader</span></a><span class="Other">;</span> <span class="Identifier">count</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">uint32</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">EndOfPacket</span><span class="Other">]</span><span class="Other">,</span>
@@ -249,7 +268,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 17:48:31 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 17:52:26 UTC</small>
       </div>
     </div>
   </div>
