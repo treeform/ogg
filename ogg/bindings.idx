@@ -1,0 +1,9 @@
+nimTitle	bindings	ogg/bindings.html	module ogg/bindings		0
+nim	Reference	ogg/bindings.html#Reference	object Reference		55
+nim	ReferenceInfo	ogg/bindings.html#ReferenceInfo	object ReferenceInfo		58
+nim	ReferenceFrame	ogg/bindings.html#ReferenceFrame	object ReferenceFrame		64
+nim	referenceOpen	ogg/bindings.html#referenceOpen,pointer,csize_t	proc referenceOpen(data: pointer; length: csize_t): ptr Reference		71
+nim	referenceError	ogg/bindings.html#referenceError,ptr.Reference	proc referenceError(decoder: ptr Reference): cstring		75
+nim	referenceInfo	ogg/bindings.html#referenceInfo,ptr.Reference	proc referenceInfo(decoder: ptr Reference): ReferenceInfo		79
+nim	referenceRead	ogg/bindings.html#referenceRead,ptr.Reference,ptr.ReferenceFrame	proc referenceRead(decoder: ptr Reference; frame: ptr ReferenceFrame): cint		83
+nim	referenceClose	ogg/bindings.html#referenceClose,ptr.Reference	proc referenceClose(decoder: ptr Reference)		87

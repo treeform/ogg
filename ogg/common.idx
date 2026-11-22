@@ -1,0 +1,18 @@
+nimTitle	common	ogg/common.html	module ogg/common		0
+nim	OggError	ogg/common.html#OggError	object OggError		4
+nim	Audio	ogg/common.html#Audio	FrameKind.Audio		6
+nim	Video	ogg/common.html#Video	FrameKind.Video		6
+nim	FrameKind	ogg/common.html#FrameKind	enum FrameKind		6
+nim	Yuv420	ogg/common.html#Yuv420	PixelFormat.Yuv420		9
+nim	Yuv422	ogg/common.html#Yuv422	PixelFormat.Yuv422		9
+nim	Yuv444	ogg/common.html#Yuv444	PixelFormat.Yuv444		9
+nim	PixelFormat	ogg/common.html#PixelFormat	enum PixelFormat		9
+nim	AudioInfo	ogg/common.html#AudioInfo	object AudioInfo		12
+nim	VideoInfo	ogg/common.html#VideoInfo	object VideoInfo		15
+nim	Plane	ogg/common.html#Plane	object Plane		21
+nim	AudioFrame	ogg/common.html#AudioFrame	object AudioFrame		26
+nim	VideoFrame	ogg/common.html#VideoFrame	object VideoFrame		32
+nim	MediaFrame	ogg/common.html#MediaFrame	object MediaFrame		38
+nim	frameRate	ogg/common.html#frameRate,VideoInfo	proc frameRate(info: VideoInfo): float64		45
+nim	pcm16	ogg/common.html#pcm16,AudioFrame	proc pcm16(frame: AudioFrame): seq[int16]		51
+nim	rgba	ogg/common.html#rgba,VideoFrame	proc rgba(frame: VideoFrame): seq[uint8]		57
