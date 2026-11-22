@@ -1,3 +1,4 @@
+import std/endians
 import common
 
 type
@@ -32,6 +33,19 @@ proc advance*(r: var BitReader, count: int) {.inline.} =
 
 proc readUnsigned*(r: var BitReader, count: int): uint32 =
   ## Reads up to 32 bits, advancing only within the current packet.
+  if count in 1 .. 24 and r.data.len - r.pos >= 4:
+    var word: uint32
+    let mask = (1'u32 shl count) - 1
+    if r.msb:
+      bigEndian32(addr word, unsafeAddr r.data[r.pos])
+      result = (word shr (32 - r.bit - count)) and mask
+    else:
+      littleEndian32(addr word, unsafeAddr r.data[r.pos])
+      result = (word shr r.bit) and mask
+    let next = r.bit + count
+    r.pos += next shr 3
+    r.bit = next and 7
+    return
   var remaining = count
   while remaining > 0:
     if r.pos >= r.data.len:

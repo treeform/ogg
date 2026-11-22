@@ -23,14 +23,35 @@ type
     granule: int64
 
 const CrcTable = block:
-  var table: array[256, uint32]
+  var table: array[4, array[256, uint32]]
   for index in 0 .. 255:
     var value = uint32(index) shl 24
     for bit in 0 ..< 8:
       let top = value shr 31
       value = (value shl 1) xor (top * 0x04c11db7'u32)
-    table[index] = value
+    table[0][index] = value
+  for shift in 1 .. 3:
+    for i in 0 .. 255:
+      let v = table[shift - 1][i]
+      table[shift][i] = (v shl 8) xor table[0][v shr 24]
   table
+
+proc pageCrc(page: openArray[char]): uint32 =
+  ## Computes the Ogg polynomial four bytes at a time with a zero checksum field.
+  template update(b: uint32) =
+    result = (result shl 8) xor CrcTable[0][(result shr 24) xor b]
+  for i in 0 ..< 22: update(uint32(page[i]))
+  for i in 22 .. 25: update(0'u32)
+  var i = 26
+  while i <= page.len - 4:
+    result = CrcTable[3][(result shr 24) xor uint32(page[i])] xor
+      CrcTable[2][((result shr 16) and 255) xor uint32(page[i+1])] xor
+      CrcTable[1][((result shr 8) and 255) xor uint32(page[i+2])] xor
+      CrcTable[0][(result and 255) xor uint32(page[i+3])]
+    i += 4
+  while i < page.len:
+    update(uint32(page[i]))
+    inc i
 
 proc little32(data: string, offset: int): uint32 =
   ## Reads an unaligned little-endian value from a checked page header.
@@ -67,10 +88,7 @@ proc nextPage(r: var PacketReader): bool {.raises: [OggError], measure.} =
   if length > r.data.len - r.payload:
     raise newException(OggError, "Truncated Ogg page payload.")
   r.position = r.payload + length
-  var crc: uint32
-  for i in p ..< r.position:
-    let value = if i - p in 22 .. 25: 0'u32 else: uint32(r.data[i])
-    crc = (crc shl 8) xor CrcTable[(crc shr 24) xor value]
+  let crc = pageCrc(r.data.toOpenArray(p, r.position - 1))
   if crc != r.data.little32(p + 22):
     raise newException(OggError, "Invalid Ogg page checksum.")
   let serial = r.data.little32(p + 14)

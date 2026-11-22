@@ -66,7 +66,7 @@ proc residual(frag: Fragment, dc: int, ac: QuantTable): DctBlock =
   else:
     result[0] = narrow(value)
     for i in 1 ..< 64: result[i] = narrow(int(frag.coeff[i]) * int(ac[i]))
-    result.inverseDct()
+    result.inverseDct(frag.last)
 
 proc pixel(plane: Plane, x, y: int): int {.inline.} =
   ## Extends the reference picture by replicating its edges.

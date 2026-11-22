@@ -18,6 +18,20 @@ suite "Native Theora transforms and headers":
       actual.inverseDct()
       check actual == expected
 
+  test "sparse transforms agree with libtheora at both cutoffs":
+    const zigzag = [0, 1, 8, 16, 9, 2, 3, 10, 17, 24]
+    var state = 19'u32
+    for count in 2 .. 10:
+      for trial in 0 ..< 32:
+        var input, expected: DctBlock
+        for i in 0 ..< count:
+          state = state * 1664525'u32 + 1013904223'u32
+          input[zigzag[i]] = cast[int16](uint16(state shr 16))
+        var actual = input
+        referenceDct(expected, input, cint(count))
+        actual.inverseDct(count)
+        check actual == expected
+
   for name in ["video420", "video422", "video444"]:
     test name & " headers":
       let data = readFile(currentSourcePath().parentDir / "data" / (name & ".ogv"))
