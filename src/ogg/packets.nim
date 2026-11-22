@@ -1,5 +1,5 @@
 ## Sequential Ogg page validation and logical packet assembly.
-import common
+import common, profiles
 
 type
   Packet* = object
@@ -37,7 +37,7 @@ proc little32(data: string, offset: int): uint32 =
   for i in 0 ..< 4:
     result = result or (uint32(data[offset + i]) shl (8 * i))
 
-proc nextPage(r: var PacketReader): bool {.raises: [OggError].} =
+proc nextPage(r: var PacketReader): bool {.raises: [OggError], measure.} =
   ## Validates the entire next page before emitting any of its packets.
   let p = r.position
   if p == r.data.len:

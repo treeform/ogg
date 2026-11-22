@@ -175,8 +175,15 @@ proc residue(r: var BitReader, s: Residue, books: seq[Book], channels: seq[int],
                 if dest == start + s.grouping: break
         inc part
 
+{.push boundChecks: not defined(release), overflowChecks: not defined(release).}
+proc applyGains(samples: var openArray[float64], gains: openArray[float64]) =
+  ## Both arrays cover the same spectral bins of this channel.
+  doAssert samples.len == gains.len
+  for i in 0 ..< samples.len: samples[i] *= gains[i]
+
 proc uncouple(mag, angle: var openArray[float64]) =
   ## Reverses channel coupling in place on two equally sized planes.
+  doAssert mag.len == angle.len
   for i in 0 ..< mag.len:
     let m = mag[i]
     let a = angle[i]
@@ -187,8 +194,12 @@ proc uncouple(mag, angle: var openArray[float64]) =
       mag[i] = if m > 0: m + a else: m - a
 
 proc overlapChannel(previous, current, window: openArray[float64],
-    first, limit, ch, channels: int, output: var openArray[float32]) =
+    first, limit, ch, channels: int, output: var openArray[float32]) {.measure.} =
   ## Writes the leading, overlapping and trailing parts of one channel.
+  doAssert first >= 0 and first <= limit and
+    limit <= (previous.len + current.len) div 4 and
+    window.len == min(previous.len, current.len) div 2 and
+    ch >= 0 and ch < channels and output.len == (limit - first) * channels
   let prev = previous.len
   let offset = (current.len - prev) div 4
   let start = max(0, -offset)
@@ -206,6 +217,7 @@ proc overlapChannel(previous, current, window: openArray[float64],
   for i in tail ..< limit:
     output[dest] = float32(current[i + offset])
     dest += channels
+{.pop.}
 
 proc decode*(v: var Vorbis, packet: Packet): AudioFrame {.measure.} =
   ## Synthesizes and trims a packet, retaining its right half for overlap.
@@ -255,7 +267,7 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame {.measure.} =
       pcm[ch].setLen(n)
       zeroMem(addr pcm[ch][0], n * sizeof(float64))
     else:
-      for i, gain in gains[ch]: pcm[ch][i] *= gain
+      applyGains(pcm[ch], gains[ch])
       v.plans[int(mode.long)].inverseMdct(v.fftWork, pcm[ch])
 
   let prev = if v.previous.len > 0: v.previous[0].len else: 0

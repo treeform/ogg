@@ -23,7 +23,14 @@ type
 
 proc readTree(r: var BitReader, tree: var HuffTree, depth: int): int =
   ## Reads a preorder Huffman tree, storing terminals as negative indices.
-  if r.flag(): return -1 - r.read(5)
+  if r.hasWindow:
+    let bits = r.peekByte(true)
+    if bits >= 128:
+      r.advance(6)
+      return -1 - ((bits shr 2) and 31)
+    r.advance(1)
+  elif r.flag():
+    return -1 - r.read(5)
   if tree.count >= tree.branches.len or depth >= 32:
     invalid("Oversized Theora Huffman tree.")
   result = tree.count
@@ -32,10 +39,21 @@ proc readTree(r: var BitReader, tree: var HuffTree, depth: int): int =
     let child = r.readTree(tree, depth + 1)
     tree.branches[result][i] = int8(child)
 
+proc readTrees(r: var BitReader, s: var TheoraSetup) {.measure.} =
+  ## Reads the 80 token trees in setup order.
+  for tree in s.trees.mitems: tree.root = r.readTree(tree, 0)
+
 proc token*(r: var BitReader, s: TheoraSetup, index: int): int =
   ## Decodes a DCT token from the selected table.
   let tree = addr s.trees[index]
   var node = tree.root
+  while node >= 0 and r.hasWindow:
+    let bits = r.peekByte(true)
+    var used = 0
+    while node >= 0 and used < 8:
+      inc used
+      node = int(tree.branches[node][(bits shr (8 - used)) and 1])
+    r.advance(used)
   while node >= 0:
     node = int(tree.branches[node][r.readBit(true)])
   -1 - node
@@ -124,4 +142,4 @@ proc header*(s: var TheoraSetup, packet: Packet) =
   of 1: comments(packet.data, false)
   else:
     r.quantization(s)
-    for tree in s.trees.mitems: tree.root = r.readTree(tree, 0)
+    readTrees(r, s)

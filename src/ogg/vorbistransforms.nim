@@ -36,7 +36,26 @@ proc fft(work: var openArray[Complex64], twiddles: openArray[Complex64]) =
   ## Applies radix-two butterflies to the bit-reversed input.
   # The plan and work buffer have the same power-of-two length, at most
   # 2048. Each stage partitions work into complete groups of 2*stride.
-  var stride = 1
+  # The first two stages use the exact rotations 1 and i.
+  for base in countup(0, work.high, 4):
+    let
+      a = work[base]
+      b = work[base + 1]
+      c = work[base + 2]
+      d = work[base + 3]
+      ar = a.re + b.re
+      ai = a.im + b.im
+      br = a.re - b.re
+      bi = a.im - b.im
+      cr = c.re + d.re
+      ci = c.im + d.im
+      dr = c.re - d.re
+      di = c.im - d.im
+    work[base] = Complex64(re: ar + cr, im: ai + ci)
+    work[base + 1] = Complex64(re: br - di, im: bi + dr)
+    work[base + 2] = Complex64(re: ar - cr, im: ai - ci)
+    work[base + 3] = Complex64(re: br + di, im: bi - dr)
+  var stride = 4
   while stride < work.len:
     for base in countup(0, work.high, 2 * stride):
       for j in 0 ..< stride:
@@ -45,7 +64,6 @@ proc fft(work: var openArray[Complex64], twiddles: openArray[Complex64]) =
         work[base + j] = Complex64(re: a.re + b.re, im: a.im + b.im)
         work[base + j + stride] = Complex64(re: a.re - b.re, im: a.im - b.im)
     stride *= 2
-{.pop.}
 
 proc inverseMdct*(plan: var MdctPlan, work: var seq[Complex64],
     samples: var seq[float64]) {.measure.} =
@@ -71,6 +89,7 @@ proc inverseMdct*(plan: var MdctPlan, work: var seq[Complex64],
     let pair = rotate(work[i], plan.rotation[i])
     unfold(2*i, pair.re)
     unfold(half - 1 - 2*i, pair.im)
+{.pop.}
 
 proc initWindow*(length: int): seq[float64] =
   ## Returns the rising half of the Vorbis overlap window.

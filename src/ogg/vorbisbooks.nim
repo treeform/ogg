@@ -71,7 +71,7 @@ proc readBook*(r: var BitReader, budget: var int): Book {.measure.} =
     else:
       if sparse and not r.flag():
         continue
-      length = r.read(5) + 1
+      length = r.smallField(5, false) + 1
     inc used
     let candidates = available and ((1'u64 shl (length + 1)) - 1)
     if candidates == 0: invalid("Oversubscribed Vorbis codebook.")
@@ -111,6 +111,17 @@ proc readBook*(r: var BitReader, budget: var int): Book {.measure.} =
 proc scalar*(r: var BitReader, book: Book): int =
   ## Walks a codeword and returns the original entry number.
   var node = 0
+  while r.hasWindow:
+    let bits = r.peekByte(false)
+    var used = 0
+    while used < 8:
+      node = int(book.nodes[node][(bits shr used) and 1])
+      inc used
+      if node < 0:
+        r.advance(used)
+        return -1 - node
+      if node == 0: invalid("Invalid Vorbis codeword.")
+    r.advance(8)
   while true:
     node = int(book.nodes[node][r.readBit(false)])
     if node < 0: return -1 - node
