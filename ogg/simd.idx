@@ -1,3 +1,4 @@
 nimTitle	simd	ogg/simd.html	module ogg/simd		0
 nim	useX86Simd	ogg/simd.html#useX86Simd	const useX86Simd		2
 nim	hasAvx2	ogg/simd.html#hasAvx2	let hasAvx2		27
+nim	useNeon	ogg/simd.html#useNeon	const useNeon		29
