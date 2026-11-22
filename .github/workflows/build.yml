@@ -26,3 +26,5 @@ jobs:
         run: python tools/gen_media.py --verify
       - run: nim r tests/tests.nim
       - run: nim r -d:release tests/tests.nim
+      - if: matrix.os == 'ubuntu-latest'
+        run: nim r -d:release -d:oggNoSimd tests/tests.nim

@@ -1,5 +1,6 @@
 import std/[complex, math]
-import profiles
+import profiles, simd
+when useX86Simd: import transformsavx2
 
 type MdctPlan* = object
   reverse: seq[int]
@@ -55,6 +56,10 @@ proc fft(work: var openArray[Complex64], twiddles: openArray[Complex64]) =
     work[base + 1] = Complex64(re: br - di, im: bi + dr)
     work[base + 2] = Complex64(re: ar - cr, im: ai - ci)
     work[base + 3] = Complex64(re: br + di, im: bi - dr)
+  when useX86Simd:
+    if hasAvx2:
+      fftStagesAvx2(work, twiddles)
+      return
   var stride = 4
   while stride < work.len:
     for base in countup(0, work.high, 2 * stride):

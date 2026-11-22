@@ -2,6 +2,9 @@
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
 ## Redistribution terms are in licenses/theora.txt.
 
+import simd
+when useX86Simd: import transformsavx2
+
 type DctBlock* = array[64, int16]
 
 proc narrow*(v: int): int16 {.inline.} =
@@ -53,6 +56,10 @@ proc inverseDct*(coefficients: var DctBlock, last = 64) =
     transform(coefficients, temp, 3, 1)
     for row in 0 ..< 8: transform(temp, coefficients, row, 4)
   else:
+    when useX86Simd:
+      if hasAvx2:
+        denseDctAvx2(coefficients)
+        return
     for row in 0 ..< 8: transform(coefficients, temp, row, 8)
     for row in 0 ..< 8: transform(temp, coefficients, row, 8)
   for value in coefficients.mitems: value = int16((int32(value) + 8) shr 4)

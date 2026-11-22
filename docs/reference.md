@@ -94,6 +94,10 @@ and run it with `--trace tmp/bench/decode.json`. The trace covers three passes
 over the same preloaded corpus. Use the ordinary release builds for the timing
 table so trace collection is outside the measurement.
 
+On x86-64 the decoder selects its AVX2 kernels at runtime when the processor
+and OS support them. Build the same source with `-d:oggNoSimd` to benchmark or
+test the portable scalar path. AVX2 flags apply only to the kernel module.
+
 ## Timing and pixels
 
 Vorbis synthesis performs granule-based end trimming. Audio timestamps count
