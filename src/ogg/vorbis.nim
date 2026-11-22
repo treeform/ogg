@@ -1,8 +1,8 @@
 ## Derived from libvorbis, copyright (c) 2002-2020 Xiph.org Foundation.
 ## Redistribution terms are in licenses/vorbis.txt.
 ## Native Vorbis I packet synthesis.
-import std/[complex, math]
-import bitstreams, common, packets, vorbisbooks, vorbisfloors
+import std/complex
+import bitstreams, common, packets, vorbisbooks, vorbisfloors, vorbistransforms
 
 type
   Residue = object
@@ -26,7 +26,10 @@ type
     residues: seq[Residue]
     mappings: seq[Mapping]
     modes: seq[Mode]
-    previous: seq[seq[float64]]
+    plans: array[2, MdctPlan]
+    windows: array[2, seq[float64]]
+    fftWork: seq[Complex64]
+    current, previous: seq[seq[float64]]
     samples, nominal, granule: int64
 
 proc readResidue(r: var BitReader, books: seq[Book]): Residue =
@@ -171,39 +174,6 @@ proc residue(r: var BitReader, s: Residue, books: seq[Book], channels: seq[int],
                 if dest == start + s.grouping: break
         inc part
 
-proc imdct(spectrum: seq[float64]): seq[float64] =
-  ## Evaluates the shifted DCT-IV with a radix-two inverse-sign FFT.
-  let n = 2 * spectrum.len
-  var buffer = newSeq[Complex64](n)
-  var reverse = 0
-  let step = rect(1.0, PI / float64(n))
-  var phase = complex64(1, 0)
-  for i, value in spectrum:
-    buffer[reverse] = value * phase
-    phase *= step
-    var bit = n shr 1
-    while (reverse and bit) != 0:
-      reverse = reverse xor bit
-      bit = bit shr 1
-    reverse = reverse xor bit
-  var size = 2
-  while size <= n:
-    let twiddle = rect(1.0, 2 * PI / float64(size))
-    for base in countup(0, n - 1, size):
-      var w = complex64(1, 0)
-      for i in 0 ..< size div 2:
-        let a = buffer[base + i]
-        let b = buffer[base + i + size div 2] * w
-        buffer[base + i] = a + b
-        buffer[base + i + size div 2] = a - b
-        w *= twiddle
-    size *= 2
-  phase = rect(1.0, PI * (float64(n div 4) + 0.5) / float64(n))
-  result.setLen(n)
-  for i in 0 ..< n:
-    result[i] = (buffer[(i + n div 4) mod n] * phase).re
-    phase *= step
-
 proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
   ## Synthesizes and trims a packet, retaining its right half for overlap.
   var r = BitReader(data: packet.data)
@@ -216,8 +186,10 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
   template mapping: untyped = v.mappings[mode.mapping]
   let channels = v.info.channels
   var
-    gains, pcm: seq[seq[float64]]
+    gains: seq[seq[float64]]
     used: seq[bool]
+  template pcm: untyped = v.current
+  pcm.setLen(channels)
   for channel in 0 ..< channels:
     let f = mapping.floors[mapping.mux[channel]]
     try:
@@ -226,7 +198,8 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
       # Vorbis I permits audio packets to end during floor decoding.
       gains.add(newSeq[float64]())
     used.add(gains[^1].len != 0)
-    pcm.add(newSeq[float64](n div 2))
+    pcm[channel].setLen(n div 2)
+    zeroMem(addr pcm[channel][0], (n div 2) * sizeof(float64))
   for pair in mapping.coupling:
     if used[pair.mag] or used[pair.angle]:
       used[pair.mag] = true
@@ -253,10 +226,11 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
         pcm[mag][j] = if m > 0: m + a else: m - a
   for ch in 0 ..< channels:
     if gains[ch].len == 0:
-      pcm[ch] = newSeq[float64](n)
+      pcm[ch].setLen(n)
+      zeroMem(addr pcm[ch][0], n * sizeof(float64))
     else:
       for i, gain in gains[ch]: pcm[ch][i] *= gain
-      pcm[ch] = imdct(pcm[ch])
+      v.plans[int(mode.long)].inverseMdct(v.fftWork, pcm[ch])
 
   let prev = if v.previous.len > 0: v.previous[0].len else: 0
   let count = if prev == 0: 0 else: (prev + n) div 4
@@ -280,6 +254,9 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
     samples: newSeq[float32]((limit - first) * channels))
   let overlap = min(prev, n) div 2
   let start = max(0, (prev - n) div 4)
+  let window = int(2 * overlap != v.sizes[0])
+  if overlap > 0 and v.windows[window].len == 0:
+    v.windows[window] = initWindow(overlap)
   for i in first ..< limit:
     let t = i - start
     var left = 1.0
@@ -288,13 +265,12 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
       left = 0
       right = 1
     elif t >= 0:
-      let a = sin(PI * 0.5 * (float64(t) + 0.5) / float64(overlap))
-      right = sin(PI * 0.5 * a * a)
-      left = cos(PI * 0.5 * a * a)
+      right = v.windows[window][t]
+      left = v.windows[window][overlap - 1 - t]
     for ch in 0 ..< channels:
       var sample = 0.0
       if left != 0: sample += left * v.previous[ch][prev div 2 + i]
       if right != 0: sample += right * pcm[ch][i + (n - prev) div 4]
       result.samples[(i - first) * channels + ch] = float32(sample)
   v.samples += limit - first
-  v.previous = move(pcm)
+  swap(v.previous, v.current)

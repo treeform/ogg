@@ -345,4 +345,4 @@ suite "Packet boundaries":
     check count == 7
 
 {.warning[UnusedImport]: off.}
-import test_packets, test_reference, test_theora
+import test_packets, test_reference, test_theora, test_vorbistransforms
