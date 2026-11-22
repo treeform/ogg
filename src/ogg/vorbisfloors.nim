@@ -1,6 +1,7 @@
 ## Derived from libvorbis, copyright (c) 2002-2020 Xiph.org Foundation.
 ## Redistribution terms are in licenses/vorbis.txt.
 import std/[algorithm, math]
+import profiles
 import bitstreams, vorbisbooks
 
 type
@@ -138,7 +139,7 @@ const Amplitude = block:
     table[i] = exp(float64(i - 255) * (140.0 / 256) * ln(10.0) / 20)
   table
 
-proc decodeFloor*(r: var BitReader, f: Floor, books: seq[Book], n: int): seq[float64] =
+proc decodeFloor*(r: var BitReader, f: Floor, books: seq[Book], n: int): seq[float64] {.measure.} =
   ## Reconstructs spectral gains, with an empty sequence for an unused channel.
   if f.kind == 0: return r.floorZero(f, books, n)
   if not r.flag(): return
@@ -180,10 +181,21 @@ proc decodeFloor*(r: var BitReader, f: Floor, books: seq[Book], n: int): seq[flo
   var prev = 0
   for point in f.sorted:
     if point != 0 and active[point]:
-      for x in f.x[prev] ..< min(n, f.x[point]):
-        let value = predict(f.x[prev], y[prev] * f.multiplier,
-          f.x[point], y[point] * f.multiplier, x)
-        result[x] = Amplitude[value]
+      let first = f.x[prev]
+      let width = f.x[point] - first
+      var level = y[prev] * f.multiplier
+      let rise = y[point] * f.multiplier - level
+      let step = rise div width
+      let remainder = abs(rise) mod width
+      let correction = cmp(rise, 0)
+      var error = 0
+      for x in first ..< min(n, f.x[point]):
+        result[x] = Amplitude[level]
+        level += step
+        error += remainder
+        if error >= width:
+          error -= width
+          level += correction
       prev = point
   for x in f.x[prev] ..< n:
     result[x] = Amplitude[y[prev] * f.multiplier]

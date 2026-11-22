@@ -2,6 +2,7 @@
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
 ## Redistribution terms are in licenses/theora.txt.
 import std/math
+import profiles
 import bitstreams, common, packets, theoradct, theoraframes, theorasetup
 
 type
@@ -72,7 +73,14 @@ proc pixel(plane: Plane, x, y: int): int {.inline.} =
   int(plane.data[clamp(y, 0, plane.height - 1) * plane.width +
     clamp(x, 0, plane.width - 1)])
 
-proc reconstruct(v: Theora, f: var FrameData, dest: Picture, p: int) =
+type PixelRow = array[8, uint8]
+
+proc blockRow(plane: Plane, offset: int): ptr PixelRow {.inline.} =
+  ## Views eight contiguous pixels of a coded block or interior predictor.
+  assert offset >= 0 and offset <= plane.data.len - 8
+  cast[ptr PixelRow](unsafeAddr plane.data[offset])
+
+proc reconstruct(v: Theora, f: var FrameData, dest: Picture, p: int) {.measure.} =
   ## Restores one plane in bottom-up raster order for DC prediction.
   let
     w = v.layout.widths[p]
@@ -95,8 +103,8 @@ proc reconstruct(v: Theora, f: var FrameData, dest: Picture, p: int) =
       frag.coeff[0] = narrow(dc + int(frag.coeff[0]))
       previousDc[source] = int(frag.coeff[0])
       let table = p + 3 * int(source != 1)
-      let samples = frag.residual(int(v.setup.quant[table][f.qis[0]][0]),
-        v.setup.quant[table][f.qis[frag.qi]])
+      let samples = frag.residual(int(v.setup.quant[f.qis[0]][table][0]),
+        v.setup.quant[f.qis[frag.qi]][table])
       let refPic = if source == 2: v.golden else: v.previous
       let mx = frag.mv.x div dx
       let my = -(frag.mv.y div dy)
@@ -110,20 +118,20 @@ proc reconstruct(v: Theora, f: var FrameData, dest: Picture, p: int) =
       for row in 0 ..< 8:
         let py = bottom - row
         let offset = py * dest[p].width + left
+        let output = dest[p].blockRow(offset)
+        let residuals = cast[ptr array[8, int16]](unsafeAddr samples[row*8])
         template store(col, prediction: int) =
-          dest[p].data[offset + col] =
-            uint8(clamp(prediction + int(samples[row*8 + col]), 0, 255))
+          output[col] = uint8(clamp(prediction + int(residuals[col]), 0, 255))
         if source == 1:
           for col in 0 ..< 8: store(col, 128)
         elif interior:
-          let a = offset + my * dest[p].width + mx
-          let b = offset + my2 * dest[p].width + mx2
-          if a == b:
-            for col in 0 ..< 8: store(col, int(refPic[p].data[a + col]))
+          let a = refPic[p].blockRow(offset + my * dest[p].width + mx)
+          if mx == mx2 and my == my2:
+            for col in 0 ..< 8: store(col, int(a[col]))
           else:
+            let b = refPic[p].blockRow(offset + my2 * dest[p].width + mx2)
             for col in 0 ..< 8:
-              store(col, (int(refPic[p].data[a+col]) +
-                int(refPic[p].data[b+col])) div 2)
+              store(col, (int(a[col]) + int(b[col])) shr 1)
         else:
           for col in 0 ..< 8:
             let px = left + col
@@ -131,7 +139,10 @@ proc reconstruct(v: Theora, f: var FrameData, dest: Picture, p: int) =
             let b = refPic[p].pixel(px + mx2, py + my2)
             store(col, (a + b) div 2)
 
-proc edge(plane: var Plane, offset, across, along, limit: int) =
+# filter only visits internal block boundaries, so all four taps and
+# all eight pixels along each edge lie within the coded plane.
+{.push boundChecks: not defined(release), overflowChecks: not defined(release).}
+proc edge(plane: var Plane, offset, across, along, limit: int) {.inline.} =
   ## Applies the four-tap loop filter at one eight-pixel block boundary.
   for i in 0 ..< 8:
     let j = offset + i * along
@@ -142,8 +153,9 @@ proc edge(plane: var Plane, offset, across, along, limit: int) =
     let adjustment = sgn(raw) * max(0, min(abs(raw), 2*limit - abs(raw)))
     plane.data[j - across] = uint8(clamp(a + adjustment, 0, 255))
     plane.data[j] = uint8(clamp(b - adjustment, 0, 255))
+{.pop.}
 
-proc filter(l: Layout, f: FrameData, dest: Picture, p, limit: int) =
+proc filter(l: Layout, f: FrameData, dest: Picture, p, limit: int) {.measure.} =
   ## Filters each boundary adjacent to a coded block exactly once.
   if limit == 0: return
   let width = l.widths[p]
@@ -173,6 +185,7 @@ proc decode*(v: var Theora, packet: Packet): VideoFrame =
       for pixel in plane.data.mitems: pixel = 128
     v.golden = v.previous
   if f.blocks.len > 0:
+    for qi in f.qis: v.setup.prepareQuant(qi)
     let dest = blank(v.layout)
     for p in 0 .. 2:
       v.reconstruct(f, dest, p)

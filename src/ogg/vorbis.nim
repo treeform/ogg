@@ -2,6 +2,7 @@
 ## Redistribution terms are in licenses/vorbis.txt.
 ## Native Vorbis I packet synthesis.
 import std/complex
+import profiles
 import bitstreams, common, packets, vorbisbooks, vorbisfloors, vorbistransforms
 
 type
@@ -124,7 +125,7 @@ proc header*(v: var Vorbis, packet: Packet) =
     if not r.flag(): invalid("Missing Vorbis setup framing bit.")
 
 proc residue(r: var BitReader, s: Residue, books: seq[Book], channels: seq[int],
-    spectrum: var seq[seq[float64]]) =
+    spectrum: var seq[seq[float64]]) {.measure.} =
   ## Decodes the residue passes into planar or channel-interleaved bins.
   if channels.len == 0: return
   let
@@ -174,7 +175,39 @@ proc residue(r: var BitReader, s: Residue, books: seq[Book], channels: seq[int],
                 if dest == start + s.grouping: break
         inc part
 
-proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
+proc uncouple(mag, angle: var openArray[float64]) =
+  ## Reverses channel coupling in place on two equally sized planes.
+  for i in 0 ..< mag.len:
+    let m = mag[i]
+    let a = angle[i]
+    if a > 0:
+      angle[i] = if m > 0: m - a else: m + a
+    else:
+      angle[i] = m
+      mag[i] = if m > 0: m + a else: m - a
+
+proc overlapChannel(previous, current, window: openArray[float64],
+    first, limit, ch, channels: int, output: var openArray[float32]) =
+  ## Writes the leading, overlapping and trailing parts of one channel.
+  let prev = previous.len
+  let offset = (current.len - prev) div 4
+  let start = max(0, -offset)
+  let mid = clamp(start, first, limit)
+  let tail = clamp(start + window.len, first, limit)
+  var dest = ch
+  for i in first ..< mid:
+    output[dest] = float32(previous[prev div 2 + i])
+    dest += channels
+  for i in mid ..< tail:
+    let t = i - start
+    output[dest] = float32(previous[prev div 2 + i] * window[window.high - t] +
+      current[i + offset] * window[t])
+    dest += channels
+  for i in tail ..< limit:
+    output[dest] = float32(current[i + offset])
+    dest += channels
+
+proc decode*(v: var Vorbis, packet: Packet): AudioFrame {.measure.} =
   ## Synthesizes and trims a packet, retaining its right half for overlap.
   var r = BitReader(data: packet.data)
   if r.flag(): invalid("Expected Vorbis audio packet.")
@@ -216,14 +249,7 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
       except EndOfPacket: break # Vorbis permits a residue to end early.
   for i in countdown(mapping.coupling.high, 0):
     let (mag, angle) = mapping.coupling[i]
-    for j in 0 ..< n div 2:
-      let m = pcm[mag][j]
-      let a = pcm[angle][j]
-      if a > 0:
-        pcm[angle][j] = if m > 0: m - a else: m + a
-      else:
-        pcm[angle][j] = m
-        pcm[mag][j] = if m > 0: m + a else: m - a
+    uncouple(pcm[mag], pcm[angle])
   for ch in 0 ..< channels:
     if gains[ch].len == 0:
       pcm[ch].setLen(n)
@@ -253,24 +279,13 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
     channels: channels, sampleRate: v.info.sampleRate,
     samples: newSeq[float32]((limit - first) * channels))
   let overlap = min(prev, n) div 2
-  let start = max(0, (prev - n) div 4)
+
   let window = int(2 * overlap != v.sizes[0])
   if overlap > 0 and v.windows[window].len == 0:
     v.windows[window] = initWindow(overlap)
-  for i in first ..< limit:
-    let t = i - start
-    var left = 1.0
-    var right = 0.0
-    if t >= overlap:
-      left = 0
-      right = 1
-    elif t >= 0:
-      right = v.windows[window][t]
-      left = v.windows[window][overlap - 1 - t]
+  if first < limit:
     for ch in 0 ..< channels:
-      var sample = 0.0
-      if left != 0: sample += left * v.previous[ch][prev div 2 + i]
-      if right != 0: sample += right * pcm[ch][i + (n - prev) div 4]
-      result.samples[(i - first) * channels + ch] = float32(sample)
+      overlapChannel(v.previous[ch], pcm[ch], v.windows[window],
+        first, limit, ch, channels, result.samples)
   v.samples += limit - first
   swap(v.previous, v.current)

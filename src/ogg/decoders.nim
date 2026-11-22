@@ -1,4 +1,5 @@
 import common, packets, theora, vorbis
+import profiles
 
 type Decoder* = ref object
   reader: PacketReader
@@ -17,7 +18,7 @@ proc validate(decoder: Decoder) {.raises: [OggError].} =
   if decoder == nil or decoder.reader.data.len == 0:
     raise newException(OggError, "The Ogg decoder is closed.")
 
-proc initialize(decoder: Decoder) {.raises: [OggError].} =
+proc initialize(decoder: Decoder) {.raises: [OggError], measure.} =
   ## Identifies the logical streams and consumes their mandatory headers.
   decoder.audioStream = -1
   decoder.videoStream = -1

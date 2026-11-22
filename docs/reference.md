@@ -88,6 +88,12 @@ checks output counts, and closes the decoder. Each row reports the median of
 eight warm batch means, alternating which implementation runs first. The
 whole-corpus row times one decode of every manifest entry per pass.
 
+To capture a Fluffy trace, put `fluffy/measure` and its `jsony` dependency on
+Nim's search path. Build the native benchmark with `-d:release -d:oggFluffy`
+and run it with `--trace tmp/bench/decode.json`. The trace covers three passes
+over the same preloaded corpus. Use the ordinary release builds for the timing
+table so trace collection is outside the measurement.
+
 ## Timing and pixels
 
 Vorbis synthesis performs granule-based end trimming. Audio timestamps count

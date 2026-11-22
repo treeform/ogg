@@ -1,4 +1,5 @@
 import std/[complex, math]
+import profiles
 
 type MdctPlan* = object
   reverse: seq[int]
@@ -47,7 +48,7 @@ proc fft(work: var openArray[Complex64], twiddles: openArray[Complex64]) =
 {.pop.}
 
 proc inverseMdct*(plan: var MdctPlan, work: var seq[Complex64],
-    samples: var seq[float64]) =
+    samples: var seq[float64]) {.measure.} =
   ## Replaces N/2 spectral coefficients with N time-domain samples.
   let half = samples.len
   doAssert half in 32 .. 4096 and (half and (half - 1)) == 0

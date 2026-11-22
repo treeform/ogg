@@ -2,17 +2,23 @@
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
 ## Redistribution terms are in licenses/theora.txt.
 import bitstreams, common, packets
+import profiles
 
 type
   HuffTree = object
     root, count: int
     branches: array[31, array[2, int8]]
   QuantTable* = array[64, uint16]
+  QuantRange = object
+    start, span, left, right: int
   TheoraSetup* = object
     info*: VideoInfo
     width*, height*: int
     filter*: array[64, int]
-    quant*: array[6, array[64, QuantTable]]
+    quant*: array[64, ref array[6, QuantTable]]
+    ac, dc: array[64, int]
+    bases: seq[array[64, uint8]]
+    ranges: array[6, seq[QuantRange]]
     trees: array[80, HuffTree]
 
 proc readTree(r: var BitReader, tree: var HuffTree, depth: int): int =
@@ -34,46 +40,53 @@ proc token*(r: var BitReader, s: TheoraSetup, index: int): int =
     node = int(tree.branches[node][r.readBit(true)])
   -1 - node
 
-proc quantization(r: var BitReader, s: var TheoraSetup) =
-  ## Interpolates base matrices and applies the intra/inter scaling limits.
-  var ac, dc: array[64, int]
+proc quantization(r: var BitReader, s: var TheoraSetup) {.measure.} =
+  ## Reads and validates the scaling factors, base matrices and ranges.
   let filterBits = r.read(3)
   for value in s.filter.mitems: value = r.read(filterBits)
   let acBits = r.read(4) + 1
-  for value in ac.mitems: value = r.read(acBits)
+  for value in s.ac.mitems: value = r.read(acBits)
   let dcBits = r.read(4) + 1
-  for value in dc.mitems: value = r.read(dcBits)
-  var bases = newSeq[array[64, uint8]](r.read(9) + 1)
-  for base in bases.mitems:
+  for value in s.dc.mitems: value = r.read(dcBits)
+  s.bases.setLen(r.read(9) + 1)
+  for base in s.bases.mitems:
     for value in base.mitems: value = uint8(r.read(8))
-  let indexBits = ilog(bases.high)
-  # Shared ranges can cross the intra/inter boundary where minima differ.
-  var interpolated: array[6, seq[array[64, uint8]]]
+  let indexBits = ilog(s.bases.high)
   for table in 0 ..< 6:
     if table != 0 and not r.flag():
       let source = if table >= 3 and r.flag(): table - 3 else: table - 1
-      interpolated[table] = interpolated[source]
+      s.ranges[table] = s.ranges[source]
     else:
-      interpolated[table].setLen(64)
       var start = 0
       var left = r.read(indexBits)
-      if left >= bases.len: invalid("Invalid Theora base matrix index.")
+      if left >= s.bases.len: invalid("Invalid Theora base matrix index.")
       while start < 63:
         let span = r.read(ilog(62 - start)) + 1
         let right = r.read(indexBits)
-        if right >= bases.len or start + span > 63:
+        if right >= s.bases.len or start + span > 63:
           invalid("Invalid Theora quantization range.")
-        for i in 0 .. span:
-          for j in 0 ..< 64:
-            let blend = (span - i) * int(bases[left][j]) + i * int(bases[right][j])
-            interpolated[table][start + i][j] = uint8((2 * blend + span) div (2 * span))
+        s.ranges[table].add(QuantRange(start: start, span: span, left: left,
+          right: right))
         start += span
         left = right
-    for qi in 0 ..< 64:
-      for j, value in interpolated[table][qi]:
-        let scale = if j == 0: dc[qi] else: ac[qi]
+
+proc prepareQuant*(s: var TheoraSetup, qi: int) =
+  ## Expands each signaled quality index once, on its first frame.
+  if s.quant[qi] != nil: return
+  new(s.quant[qi])
+  for table in 0 ..< 6:
+    for r in s.ranges[table]:
+      let t = qi - r.start
+      if t > r.span: continue
+      for j in 0 ..< 64:
+        let blend = (r.span - t) * int(s.bases[r.left][j]) +
+          t * int(s.bases[r.right][j])
+        let value = (2 * blend + r.span) div (2 * r.span)
+        let scale = if j == 0: s.dc[qi] else: s.ac[qi]
         let minimum = (if j == 0: 16 else: 8) shl int(table >= 3)
-        s.quant[table][qi][j] = uint16(clamp(4 * (int(value) * scale div 100), minimum, 4096))
+        s.quant[qi][table][j] =
+          uint16(clamp(4 * (value * scale div 100), minimum, 4096))
+      break
 
 proc header*(s: var TheoraSetup, packet: Packet) =
   ## Reads identification, comments, or setup from one checked Ogg packet.

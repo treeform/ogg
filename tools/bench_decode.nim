@@ -2,6 +2,8 @@
 ## with the C-backed binary's path as its only argument.
 import std/[algorithm, json, monotimes, os, osproc, strformat, strutils, times]
 import ogg
+when defined(oggFluffy):
+  from fluffy/measure import startTrace, endTrace, dumpMeasures
 
 const
   DataDir = currentSourcePath().parentDir.parentDir / "tests" / "data"
@@ -44,14 +46,16 @@ proc measure(fixtures: openArray[Fixture]): float64 =
     elapsed = (getMonoTime() - start).inNanoseconds
   elapsed.float64 / (1_000_000 * count).float64
 
-proc sample(): JsonNode =
-  ## Preloads the manifest corpus and measures each file and a full suite pass.
-  var fixtures: seq[Fixture]
+proc loadFixtures(): seq[Fixture] =
+  ## Preloads the manifest corpus with its expected frame counts.
   for entry in parseFile(DataDir / "manifest.json")["cases"]:
     let name = entry["file"].getStr
-    fixtures.add(Fixture(name: name, data: readFile(DataDir / name),
+    result.add(Fixture(name: name, data: readFile(DataDir / name),
       expected: Output(sampleFrames: entry{"samples"}.getInt,
         videoFrames: entry{"frames"}.getInt)))
+proc sample(): JsonNode =
+  ## Measures each file and a full suite pass.
+  let fixtures = loadFixtures()
   result = newJObject()
   for i, f in fixtures:
     result[f.name] = %measure(fixtures.toOpenArray(i, i))
@@ -78,6 +82,20 @@ proc main() =
   ## Alternates backend order and reports elapsed milliseconds per decode.
   when not defined(release):
     quit("Build the benchmark with -d:release.")
+  when defined(oggFluffy):
+    if paramCount() == 2 and paramStr(1) == "--trace":
+      let fixtures = loadFixtures()
+      let path = paramStr(2)
+      if path.parentDir.len > 0: createDir(path.parentDir)
+      startTrace()
+      defer:
+        endTrace()
+        dumpMeasures(path)
+      for pass in 0 ..< 3:
+        for f in fixtures:
+          if decode(f.data) != f.expected:
+            raise newException(ValueError, "Unexpected output counts for " & f.name)
+      return
   if paramCount() != 1:
     quit("Usage: bench-nim <path-to-bench-c>")
   if paramStr(1) == "--sample":

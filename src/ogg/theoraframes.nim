@@ -2,6 +2,7 @@
 ## Derived from libtheora, copyright (C) 2002-2009 Xiph.org Foundation.
 ## Redistribution terms are in licenses/theora.txt.
 import bitstreams, common, theoradct, theorasetup
+import profiles
 
 type
   Motion* = tuple[x, y: int]
@@ -200,7 +201,7 @@ proc quantizers(r: var BitReader, f: var FrameData) =
       f.blocks[index].qi = 1 + int(second.len > 0 and second[j])
       inc j
 
-proc coefficients(r: var BitReader, s: TheoraSetup, f: var FrameData) =
+proc coefficients(r: var BitReader, s: TheoraSetup, f: var FrameData) {.measure.} =
   ## Distributes coefficient-major tokens over the coded blocks.
   var
     next = newSeq[int](f.coded.len)

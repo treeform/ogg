@@ -1,7 +1,8 @@
 ## Derived from libvorbis, copyright (c) 2002-2020 Xiph.org Foundation.
 ## Redistribution terms are in licenses/vorbis.txt.
 ## Vorbis I packed codebooks and vector lookup.
-import std/math
+import std/[bitops, math]
+import profiles
 import bitstreams
 
 type Book* = object
@@ -35,7 +36,7 @@ proc quantCount(entries, dimension: int): int =
     else: hi = mid - 1
   lo
 
-proc readBook*(r: var BitReader, budget: var int): Book =
+proc readBook*(r: var BitReader, budget: var int): Book {.measure.} =
   ## Builds the prefix tree in Vorbis entry order and retains packed vectors.
   if r.read(24) != 0x564342:
     invalid("Invalid Vorbis codebook sync.")
@@ -47,9 +48,13 @@ proc readBook*(r: var BitReader, budget: var int): Book =
   let ordered = r.flag()
   let sparse = not ordered and r.flag()
   var
-    markers: array[33, uint64]
+    # At most one unused right subtree exists at each depth. The deepest
+    # available prefix that fits is the next codeword in Vorbis entry order.
+    freeSlots: array[33, int]
+    available = 1'u64  # Bit zero represents the empty tree.
     length, left, used: int
-    coverage: uint64
+  if not sparse:
+    result.nodes = newSeqOfCap[array[2, int32]](min(result.entries, 8192))
   result.nodes.add([0'i32, 0])
   if ordered:
     length = r.read(5)
@@ -68,31 +73,23 @@ proc readBook*(r: var BitReader, budget: var int): Book =
         continue
       length = r.read(5) + 1
     inc used
-    coverage += 1'u64 shl (32 - length)
-    var word = markers[length]
-    if word >= (1'u64 shl length):
-      invalid("Oversubscribed Vorbis codebook.")
-    var node = 0
-    for bit in countdown(length - 1, 0):
-      let side = int((word shr bit) and 1)
-      if bit == 0:
-        result.nodes[node][side] = int32(-entry - 1)
-      else:
-        if result.nodes[node][side] == 0:
-          result.nodes[node][side] = int32(result.nodes.len)
-          result.nodes.add([0'i32, 0])
-        node = int(result.nodes[node][side])
-    for j in countdown(length, 1):
-      if (markers[j] and 1) != 0 and j > 1:
-        markers[j] = markers[j - 1] shl 1
-        break
-      inc markers[j]
-    for j in length + 1 .. 32:
-      if (markers[j] shr 1) != word: break
-      word = markers[j]
-      markers[j] = markers[j - 1] shl 1
-  if used != 0 and coverage != 1'u64 shl 32 and
-      not (used == 1 and coverage == 1'u64 shl 31):
+    let candidates = available and ((1'u64 shl (length + 1)) - 1)
+    if candidates == 0: invalid("Oversubscribed Vorbis codebook.")
+    var depth = fastLog2(candidates)
+    available = available xor (1'u64 shl depth)
+    var slot = freeSlots[depth]
+    while depth < length:
+      var branch = 0
+      if depth > 0:
+        branch = result.nodes.len
+        result.nodes[slot shr 1][slot and 1] = int32(branch)
+        result.nodes.add([0'i32, 0])
+      inc depth
+      slot = branch * 2
+      freeSlots[depth] = slot + 1
+      available = available or (1'u64 shl depth)
+    result.nodes[slot shr 1][slot and 1] = int32(-entry - 1)
+  if used != 0 and available != 0 and not (used == 1 and available == 2):
     invalid("Incomplete Vorbis codebook.")
   result.lookup = r.read(4)
   if result.lookup > 2:
