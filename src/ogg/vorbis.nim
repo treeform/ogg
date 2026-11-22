@@ -220,7 +220,11 @@ proc decode*(v: var Vorbis, packet: Packet): AudioFrame =
     used: seq[bool]
   for channel in 0 ..< channels:
     let f = mapping.floors[mapping.mux[channel]]
-    gains.add(r.decodeFloor(v.floors[f], v.books, n div 2))
+    try:
+      gains.add(r.decodeFloor(v.floors[f], v.books, n div 2))
+    except EndOfPacket:
+      # Vorbis I permits audio packets to end during floor decoding.
+      gains.add(newSeq[float64]())
     used.add(gains[^1].len != 0)
     pcm.add(newSeq[float64](n div 2))
   for pair in mapping.coupling:

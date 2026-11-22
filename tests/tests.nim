@@ -1,6 +1,6 @@
 import
   std/[json, math, os, unittest],
-  ogg, ogg/packets
+  ogg, ogg/[packets, vorbis]
 
 const
   DataPath = currentSourcePath().parentDir / "data"
@@ -280,6 +280,23 @@ proc page(flags, number: int, lacing: openArray[int], payload: string): string =
   result.checksum(0)
 
 suite "Packet boundaries":
+  test "Vorbis floor data may end early in a complete audio packet":
+    var reader = PacketReader(data: readFile(DataPath / "mono.ogg"))
+    var packet: Packet
+    var codec: Vorbis
+    for i in 0 .. 2:
+      require reader.nextPacket(packet)
+      codec.header(packet)
+    require reader.nextPacket(packet)
+    # Short mode, floor present, packet ends inside the first amplitude.
+    packet.data = "\x04"
+    packet.granule = -1
+    check codec.decode(packet).samples.len == 0
+    inc packet.number
+    let frame = codec.decode(packet)
+    require frame.samples.len > 0
+    for sample in frame.samples: check sample == 0
+
   test "a zero lace terminates a 255-byte packet and can encode an empty packet":
     let payload = newString(255)
     var r = PacketReader(data: page(2, 0, [255], payload) &
