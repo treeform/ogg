@@ -29,7 +29,11 @@
     <div class="container">
       <h1 class="title">Index</h1>
       Modules: <a href="ogg.html">ogg</a>, <a href="ogg/bitstreams.html">ogg/bitstreams</a>, <a href="ogg/common.html">ogg/common</a>, <a href="ogg/decoders.html">ogg/decoders</a>, <a href="ogg/packets.html">ogg/packets</a>, <a href="ogg/profiles.html">ogg/profiles</a>, <a href="ogg/theora.html">ogg/theora</a>, <a href="ogg/theoradct.html">ogg/theoradct</a>, <a href="ogg/theoraframes.html">ogg/theoraframes</a>, <a href="ogg/theorasetup.html">ogg/theorasetup</a>, <a href="ogg/vorbis.html">ogg/vorbis</a>, <a href="ogg/vorbisbooks.html">ogg/vorbisbooks</a>, <a href="ogg/vorbisfloors.html">ogg/vorbisfloors</a>, <a href="ogg/vorbistransforms.html">ogg/vorbistransforms</a>.<br/><p /><h2>API symbols</h2>
-<dl><dt><a name="Audio" href="#Audio"><span>Audio:</span></a></dt><dd><ul class="simple">
+<dl><dt><a name="advance" href="#advance"><span>advance:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc advance(r: var BitReader; count: int)" href="ogg/bitstreams.html#advance%2CBitReader%2Cint">bitstreams: proc advance(r: var BitReader; count: int)</a></li>
+          </ul></dd>
+<dt><a name="Audio" href="#Audio"><span>Audio:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: FrameKind.Audio" href="ogg/common.html#Audio">common: FrameKind.Audio</a></li>
           </ul></dd>
@@ -119,6 +123,10 @@
 <li><a class="reference external"
           data-doc-search-tag="decoders: proc hasVideo(decoder: Decoder): bool" href="ogg/decoders.html#hasVideo%2CDecoder">decoders: proc hasVideo(decoder: Decoder): bool</a></li>
           </ul></dd>
+<dt><a name="hasWindow" href="#hasWindow"><span>hasWindow:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc hasWindow(r: BitReader): bool" href="ogg/bitstreams.html#hasWindow%2CBitReader">bitstreams: proc hasWindow(r: BitReader): bool</a></li>
+          </ul></dd>
 <dt><a name="header" href="#header"><span>header:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="theora: proc header(v: var Theora; packet: Packet)" href="ogg/theora.html#header%2CTheora%2CPacket">theora: proc header(v: var Theora; packet: Packet)</a></li>
@@ -205,6 +213,10 @@
 <li><a class="reference external"
           data-doc-search-tag="common: proc pcm16(frame: AudioFrame): seq[int16]" href="ogg/common.html#pcm16%2CAudioFrame">common: proc pcm16(frame: AudioFrame): seq[int16]</a></li>
           </ul></dd>
+<dt><a name="peekByte" href="#peekByte"><span>peekByte:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc peekByte(r: BitReader; msb: static bool): int" href="ogg/bitstreams.html#peekByte%2CBitReader%2Cstaticbool">bitstreams: proc peekByte(r: BitReader; msb: static bool): int</a></li>
+          </ul></dd>
 <dt><a name="PixelFormat" href="#PixelFormat"><span>PixelFormat:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="common: enum PixelFormat" href="ogg/common.html#PixelFormat">common: enum PixelFormat</a></li>
@@ -256,6 +268,10 @@
 <dt><a name="scalar" href="#scalar"><span>scalar:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="vorbisbooks: proc scalar(r: var BitReader; book: Book): int" href="ogg/vorbisbooks.html#scalar%2CBitReader%2CBook">vorbisbooks: proc scalar(r: var BitReader; book: Book): int</a></li>
+          </ul></dd>
+<dt><a name="smallField" href="#smallField"><span>smallField:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bitstreams: proc smallField(r: var BitReader; count: static int; msb: static bool): int" href="ogg/bitstreams.html#smallField%2CBitReader%2Cstaticint%2Cstaticbool">bitstreams: proc smallField(r: var BitReader; count: static int; msb: static bool): int</a></li>
           </ul></dd>
 <dt><a name="Theora" href="#Theora"><span>Theora:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -313,7 +329,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 18:13:29 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-11-22 18:15:52 UTC</small>
       </div>
     </div>
   </div>
