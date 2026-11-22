@@ -1,4 +1,4 @@
-## Decodes Ogg Vorbis audio and Ogg Theora video through a reference backend.
+## Decodes Ogg Vorbis audio and Ogg Theora video in Nim.
 
 import ogg/[common, decoders]
 

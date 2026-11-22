@@ -1,71 +1,57 @@
-import
-  bindings, common
+import common, packets, theora, vorbis
 
-type
-  DecoderObj = object
-    handle: ptr Reference
-    data: string
-    audio: AudioInfo
-    video: VideoInfo
-
-  Decoder* = ref DecoderObj
-
-proc release(decoder: var DecoderObj) {.raises: [].} =
-  ## Releases native state before the compressed input it borrows.
-  if decoder.handle != nil:
-    referenceClose(decoder.handle)
-    decoder.handle = nil
-  decoder.data = ""
-
-proc `=destroy`(decoder: var DecoderObj) {.raises: [].} =
-  ## Releases the native decoder when its last Nim reference is dropped.
-  decoder.release()
+type Decoder* = ref object
+  reader: PacketReader
+  audio: Vorbis
+  video: Theora
+  audioStream, videoStream: int
+  error: string
 
 proc close*(decoder: Decoder) {.raises: [].} =
-  ## Releases a decoder immediately; closing nil or closed decoders is harmless.
+  ## Releases compressed data and both codec states immediately.
   if decoder != nil:
-    decoder[].release()
+    reset(decoder[])
 
 proc validate(decoder: Decoder) {.raises: [OggError].} =
-  ## Rejects a closed decoder before passing its handle to C.
-  if decoder == nil or decoder.handle == nil:
+  ## Requires an open decoder.
+  if decoder == nil or decoder.reader.data.len == 0:
     raise newException(OggError, "The Ogg decoder is closed.")
 
 proc initialize(decoder: Decoder) {.raises: [OggError].} =
-  ## Opens the pinned reference decoder and records both streams' metadata.
-  decoder.handle = referenceOpen(
-    unsafeAddr decoder.data[0], csize_t(decoder.data.len)
-  )
-  let error = referenceError(decoder.handle)
-  if error != nil:
-    let message = $error
-    decoder.close()
-    raise newException(OggError, message)
-  let info = referenceInfo(decoder.handle)
-  var format: PixelFormat
-  case info.pixelFormat
-  of 0: format = Yuv420
-  of 2: format = Yuv422
-  of 3: format = Yuv444
-  else:
-    decoder.close()
-    raise newException(OggError, "Unsupported Theora pixel format.")
-  decoder.audio = AudioInfo(
-    channels: int(info.channels), sampleRate: int(info.sampleRate)
-  )
-  decoder.video = VideoInfo(
-    width: int(info.width), height: int(info.height),
-    offsetX: int(info.offsetX), offsetY: int(info.offsetY),
-    pixelFormat: format,
-    fpsNumerator: uint32(info.fpsNumerator),
-    fpsDenominator: uint32(info.fpsDenominator)
-  )
+  ## Identifies the logical streams and consumes their mandatory headers.
+  decoder.audioStream = -1
+  decoder.videoStream = -1
+  var packet: Packet
+  var ready = 0
+  while decoder.reader.nextPacket(packet):
+    if packet.number == 0:
+      if packet.data.len < 7:
+        raise newException(OggError, "Missing Ogg codec identification.")
+      case packet.data[0..6]
+      of "\x01vorbis":
+        if decoder.audioStream >= 0:
+          raise newException(OggError, "Duplicate Vorbis stream.")
+        decoder.audioStream = packet.stream
+      of "\x80theora":
+        if decoder.videoStream >= 0:
+          raise newException(OggError, "Duplicate Theora stream.")
+        decoder.videoStream = packet.stream
+      else:
+        raise newException(OggError, "Unsupported Ogg codec.")
+    if packet.stream == decoder.audioStream:
+      decoder.audio.header(packet)
+    else:
+      decoder.video.header(packet)
+    if packet.number == 2:
+      inc ready
+    if decoder.reader.body and ready == decoder.reader.count: return
+  raise newException(OggError, "Missing Ogg codec headers.")
 
 proc newOgg*(data: string): Decoder {.raises: [OggError].} =
   ## Retains compressed input for sequential decoding from the beginning.
   if data.len == 0:
     raise newException(OggError, "The Ogg input is empty.")
-  result = Decoder(data: data)
+  result = Decoder(reader: PacketReader(data: data))
   result.initialize()
 
 proc openOgg*(path: string): Decoder {.raises: [OggError].} =
@@ -80,12 +66,12 @@ proc openOgg*(path: string): Decoder {.raises: [OggError].} =
 proc audioInfo*(decoder: Decoder): AudioInfo {.raises: [OggError].} =
   ## Returns audio metadata, with zero channels when no audio is present.
   decoder.validate()
-  return decoder.audio
+  decoder.audio.info
 
 proc videoInfo*(decoder: Decoder): VideoInfo {.raises: [OggError].} =
   ## Returns video metadata, with zero dimensions when no video is present.
   decoder.validate()
-  return decoder.video
+  decoder.video.setup.info
 
 proc hasAudio*(decoder: Decoder): bool {.raises: [OggError].} =
   ## Returns whether the input contains a Vorbis stream.
@@ -98,45 +84,27 @@ proc hasVideo*(decoder: Decoder): bool {.raises: [OggError].} =
 proc rewind*(decoder: Decoder) {.raises: [OggError].} =
   ## Reopens the retained compressed input and resets both streams to the start.
   decoder.validate()
-  referenceClose(decoder.handle)
-  decoder.handle = nil
+  let data = move(decoder.reader.data)
+  decoder.close()
+  decoder.reader.data = data
   decoder.initialize()
 
 proc readFrame*(decoder: Decoder, frame: var MediaFrame): bool
     {.raises: [OggError].} =
-  ## Copies the next audio or video packet's output in container order.
-  ## Returns false only at clean EOF and leaves frame unchanged on EOF or error.
+  ## Returns the next owned frame in container order, or false at clean EOF.
   decoder.validate()
-  var native: ReferenceFrame
-  let status = referenceRead(decoder.handle, addr native)
-  if status < 0:
-    raise newException(OggError, $referenceError(decoder.handle))
-  if status == 0:
-    return false
-  if native.kind == 1:
-    let info = decoder.audio
-    var audio = AudioFrame(
-      time: native.time, channels: info.channels, sampleRate: info.sampleRate,
-      samples: newSeq[float32](int(native.samples) * info.channels)
-    )
-    for i in 0 ..< int(native.samples):
-      for channel in 0 ..< info.channels:
-        audio.samples[i * info.channels + channel] = native.pcm[channel][i]
-    frame = MediaFrame(kind: Audio, audio: audio)
-  else:
-    var video = VideoFrame(time: native.time, info: decoder.video)
-    for i in 0 ..< 3:
-      let
-        width = int(native.widths[i])
-        height = int(native.heights[i])
-      video.planes[i] = Plane(
-        width: width, height: height, data: newSeq[uint8](width * height)
-      )
-      for y in 0 ..< height:
-        copyMem(
-          addr video.planes[i].data[y * width],
-          addr native.planes[i][y * int(native.strides[i])],
-          width
-        )
-    frame = MediaFrame(kind: Video, video: video)
-  return true
+  if decoder.error.len > 0:
+    raise newException(OggError, decoder.error)
+  try:
+    var packet: Packet
+    while decoder.reader.nextPacket(packet):
+      if packet.stream == decoder.audioStream:
+        let audio = decoder.audio.decode(packet)
+        if audio.samples.len == 0: continue
+        frame = MediaFrame(kind: Audio, audio: audio)
+      else:
+        frame = MediaFrame(kind: Video, video: decoder.video.decode(packet))
+      return true
+  except OggError as error:
+    decoder.error = error.msg
+    raise
