@@ -67,6 +67,27 @@ the public decoder. It checks frame order, timestamps, sample counts, absolute
 PCM error below 0.00001, every byte of all three padded planes, and EOF.
 Run `nim r tests/test_reference.nim path/to/clip.ogv` to compare another file.
 
+## Benchmarking the corpus
+
+Build `tools/bench_decode.nim` twice with the same release flags. Point one
+build at the original C-backed API from commit `ba3a2e6` and the other at the
+current Nim implementation. Create `tmp/bench/baseline` before running these
+commands from the repository root.
+
+```sh
+git archive -o tmp/bench/baseline.tar ba3a2e6 src
+tar -xf tmp/bench/baseline.tar -C tmp/bench/baseline
+nim c -d:release --path:tmp/bench/baseline/src --nimcache:tmp/bench/cache-c --out:tmp/bench/bench-c tools/bench_decode.nim
+nim c -d:release --path:src --nimcache:tmp/bench/cache-native --out:tmp/bench/bench-nim tools/bench_decode.nim
+./tmp/bench/bench-nim ./tmp/bench/bench-c
+```
+
+On Windows, give both executables the `.exe` extension in the build and run
+commands. Each timed pass opens preloaded input, decodes to owned frames,
+checks output counts, and closes the decoder. Each row reports the median of
+eight warm batch means, alternating which implementation runs first. The
+whole-corpus row times one decode of every manifest entry per pass.
+
 ## Timing and pixels
 
 Vorbis synthesis performs granule-based end trimming. Audio timestamps count
